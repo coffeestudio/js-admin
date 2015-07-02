@@ -31,7 +31,10 @@ class Content {
         /* List */
         .controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$coffee', ($scope, $stateParams, $coffee) => {
             angular.extend($scope, $stateParams);
-            $coffee.model.get({name: $scope.name, method: 'getList'}, (data) => {
+            $coffee.lang.getValue({section: 'models', subsection: $scope.name}, (data) => {
+                $scope.modelTitle = data.value;
+            });
+            $coffee.model.get({name: $scope.name, method: 'getList', fieldset: '@listView'}, (data) => {
                 $scope.rows = data.model;
             });
         }])

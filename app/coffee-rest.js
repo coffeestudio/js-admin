@@ -17,6 +17,13 @@ define(["require", "exports", 'angular', "angular-resource"], function (require,
     var CoffeeRestService = (function () {
         function CoffeeRestService($resource) {
             this.config = $resource('/coffee.api.config/:section/:subsection/:param');
+            this.lang = $resource('/coffee.api.lang/:section/:subsection/:param', {}, {
+                getValue: {
+                    transformResponse: function (data, hGetter) {
+                        return { value: angular.fromJson(data) };
+                    }
+                }
+            });
             this.model = $resource('/coffee.api.model/:name/:method/:fieldset');
             this.util = $resource('/coffee.api.util/:name/:method');
         }

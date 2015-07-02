@@ -24,7 +24,10 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                 $locationProvider.html5Mode(true);
             }]).controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$coffee', function ($scope, $stateParams, $coffee) {
                 angular.extend($scope, $stateParams);
-                $coffee.model.get({ name: $scope.name, method: 'getList' }, function (data) {
+                $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
+                    $scope.modelTitle = data.value;
+                });
+                $coffee.model.get({ name: $scope.name, method: 'getList', fieldset: '@listView' }, function (data) {
                     $scope.rows = data.model;
                 });
             }]).controller('CoffeeModelContentEditCtrl', ['$scope', '$stateParams', '$coffee', function ($scope, $stateParams, $coffee) {
