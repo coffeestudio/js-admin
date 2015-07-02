@@ -1,0 +1,34 @@
+{
+  "name": "coffeestudio-admin",
+  "version": "0.0.1",
+  "authors": [
+    "Art <art@coffeestudio.ru>"
+  ],
+  "description": "CoffeeStudio Admin System",
+  "main": "index.html",
+  "keywords": [
+    "coffeestudio",
+    "admin"
+  ],
+  "license": "EULA",
+  "homepage": "http://coffeestudio.ru",
+  "ignore": [
+    "**/.*",
+    "components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.4",
+    "angular-animate": "*",
+    "angular-resource": "*",
+    "angular-ui-router": "*",
+    "angular-ui-sortable": "*",
+    "jquery": "^2.1",
+    "jquery-ui": "^1.11",
+    "requirejs": "*",
+    "uikit": "^2",
+    "slidebars": "*",
+    "fontawesome": "*"
+  }
+}

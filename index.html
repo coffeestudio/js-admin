@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<base href="/adm/">
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>Admin</title>
+	<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+	<link href="assets/stylesheets/app.css" rel="stylesheet"/>
+	<script type="text/javascript" data-main="app/boot" src="app/components/requirejs/require.js"></script>
+	<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<!-- Scripts -->
+	<!--<script src="js/uikit.min.js"></script>-->
+	<!--<script src="js/tooltip.min.js"></script>-->
+</head>
+<body>
+<header>
+	<div class="logotype uk-hidden-small">
+		<a href="/adm">Агентство интернет-рекламы Coffee Studio</a>
+	</div>
+	<div class="adm-handle uk-float-left">
+		<div class="uk-nestable-handle"></div>
+	</div>
+	<div class="head-blocks">
+		<div class="uk-grid uk-grid-collapse">
+			<div class="uk-width-medium-9-10 uk-width-small-10-10 leftcol">
+				<div ng-controller="CoffeeHeaderCtrl" class="uk-grid uk-grid-collapse">
+					<div class="uk-width-medium-4-10 uk-hidden-small">
+						<span class="date">20 мая 2015 г</span>
+						<div class="site">Сайт: <a href="/" ng-bind="siteTitle"></a></div>
+					</div>
+					<div class="uk-width-medium-4-10 uk-width-small-10-10 icons">
+						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Карта сайта">
+							<span class="uk-icon-sitemap"></span>
+						</a>
+						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Настройки сайта">
+							<span class="uk-icon-cogs"></span>
+						</a>
+						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Сохранить">
+							<span class="uk-icon-download"></span>
+						</a>
+						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Восстановить">
+							<span class="uk-icon-upload"></span>
+						</a>
+						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Помощь">
+							<span class="uk-icon-question-circle"></span>
+						</a>
+						<a href="#" class="uk-hidden-medium uk-hidden-large" data-uk-tooltip="{pos:'bottom'}" title="Выход">
+							<span class="uk-icon-sign-out"></span>
+						</a>
+					</div>
+					<div class="uk-width-medium-2-10 uk-hidden-small">
+						<span class="user">Admin</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="uk-width-medium-1-10 uk-hidden-small logout">
+				<a href="#"><span class="uk-icon-sign-out"></span></a>
+			</div>
+		</div>
+	</div>
+</header>
+
+<div id="aside" class="sb-slidebar sb-left" ng-controller="CoffeeSidebarCtrl">
+	<div class="scrollable">
+		<coffee-side-nav>
+			<section class="sidenav" ng-repeat="block in blocks">
+                <div class="uk-nav-header" ng-bind="block.title"></div>
+                <ul class="root">
+                    <li coffee-side-block-tree="node in block.children at ul" ng-class="{parent: node.children}">
+                        <a ui-sref="{{makeSref(node)}}">
+                            <i class="uk-icon-external-link"></i> <span ng-bind="node.title"></span>
+                            <span class="uk-badge">1</span>
+                            <b ng-if="node.children" class="uk-icon-angle-right"></b>
+                        </a>
+                        <ul class="submenu"></ul>
+                    </li>
+                </ul>
+			</section>
+		</coffee-side-nav>
+	</div>
+
+	<div class="sidefoot">
+		Агентство интернет-рекламы Coffee Studio
+	</div>
+</div><!-- /end #aside -->
+
+<section class="adm-container">
+	<div ui-view class="adm-box-content uk-container">
+		<div>Добро пожаловать.</div>
+	</div><!-- /end .adm-box-content.uk-container -->
+</section><!-- /end .adm-container -->
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<ul class="sidenav">
+    <li class="uk-nav-header">{{w.name}}</li>
+    <li class="parent">
+        <a href="#" ng-click="expanded = ! expanded">
+            <i class="uk-icon-home"></i>
+            <span>Главная</span>
+            <span class="uk-badge">10</span>
+            <b class="uk-icon-angle-right"></b>
+        </a>
+        <ul class="submenu" ng-class="{open: expanded}">
+            <li class="parent">
+                <a href="#">
+                    <i class="uk-icon-external-link"></i> <span>Ссылка</span>
+                    <span class="uk-badge">1</span>
+                    <b class="uk-icon-angle-right"></b>
+                </a>
+                <ul class="submenu" ng-if="expanded">
+                    <li><a href="#"><i class="uk-icon-external-link"></i> <span>Ссылка</span></a></li>
+                    <li><a href="#"><i class="uk-icon-external-link"></i> <span>Ссылка</span></a></li>
+                    <li><a href="#"><i class="uk-icon-external-link"></i> <span>Ссылка</span></a></li>
+                </ul>
+            </li>
+            <li class="parent">
+                <a href="#">
+                    <i class="uk-icon-external-link"></i> <span>Ссылка</span>
+                    <b class="uk-icon-angle-right"></b>
+                </a>
+                <ul class="submenu">
+                    <li><a href="#"><i class="uk-icon-external-link"></i> <span>Ссылка</span></a></li>
+                    <li><a href="#"><i class="uk-icon-external-link"></i> <span>Ссылка</span></a></li>
+                    <li><a href="#"><i class="uk-icon-external-link"></i> <span>Ссылка</span></a></li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="uk-icon-external-link"></i> <span>Ссылка</span></a></li>
+        </ul>
+    </li>
+    <li><a href="#"><i class="uk-icon-home"></i> <span>Главная</span></a></li>
+    <li><a href="#"><i class="uk-icon-home"></i> <span>Главная</span></a></li>
+</ul>
