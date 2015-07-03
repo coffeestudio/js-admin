@@ -80,28 +80,30 @@ class Content {
                     });
                 }
             });
+            $scope.save = (obj) => {
+                console.log('SAVE');
+                $coffee.edit($scope.name, $scope.id, obj);
+            };
         }])
-        .directive('coffeeInput', () => {
+        .directive('coffeeInput', ($compile) => {
             return {
                 restrict: 'E'
                 , replace: true
-                , scope: { name: '@', value: '@', type: '@' }
+                , scope: { name: '@', value: '=', type: '@' }
                 , link: (scope: any, elem, attr) => {
                     var tpl: string;
                     switch (scope.type) {
                         case 'boolean':
-                            var ck = {'true': '', 'false': ''};
-                            ck[scope.value] = ' checked="true"';
-                            tpl = '<label class="bool"><input'+ck['true']+' type="radio" name="'+scope.name+'" value="1"/> да</label>' +
-                                  '<label class="bool"><input'+ck['false']+' type="radio" name="'+scope.name+'" value="0"/> нет</label>';
+                            tpl = '<label class="bool"><input ng-model="value" type="radio" name="'+scope.name+'" value="1"/> да</label>' +
+                                  '<label class="bool"><input ng-model="value" type="radio" name="'+scope.name+'" value="0"/> нет</label>';
                             break;
                         case 'text':
-                            tpl = '<textarea name="'+scope.name+'">'+scope.value+'</textarea>';
+                            tpl = '<textarea ng-model="value" name="'+scope.name+'"></textarea>';
                             break;
                         default:
-                            tpl = '<input type="text" name="'+scope.name+'" value="'+scope.value+'"/>';
+                            tpl = '<input ng-model="value" type="text" name="'+scope.name+'"/>';
                     }
-                    elem.append(tpl);
+                    elem.append($compile(tpl)(scope));
                 }
             };
         })

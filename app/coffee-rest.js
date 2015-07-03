@@ -8,14 +8,15 @@ define(["require", "exports", 'angular', "angular-resource"], function (require,
             if (this.ngModule != null)
                 return this.ngModule;
             this.ngModule = angular.module('coffeeRest', ['ngResource']);
-            this.ngModule.service('$coffee', ['$resource', CoffeeRestService]);
+            this.ngModule.service('$coffee', ['$resource', '$http', CoffeeRestService]);
             return this.ngModule;
         };
         CoffeeRest.ngModule = null;
         return CoffeeRest;
     })();
     var CoffeeRestService = (function () {
-        function CoffeeRestService($resource) {
+        function CoffeeRestService($resource, $http) {
+            this.$http = $http;
             this.config = $resource('/coffee.api.config/:section/:subsection/:param');
             this.lang = $resource('/coffee.api.lang/:section/:subsection/:param', {}, {
                 getValue: {
@@ -27,6 +28,16 @@ define(["require", "exports", 'angular', "angular-resource"], function (require,
             this.model = $resource('/coffee.api.model/:name/:method/:fieldset');
             this.util = $resource('/coffee.api.util/:name/:method');
         }
+        CoffeeRestService.prototype.edit = function (model, id, obj) {
+            this.$http({
+                method: 'POST',
+                url: '/coffee.api.model/' + model + '/editById',
+                data: obj,
+                params: { id: id }
+            }).success(function (data) {
+                console.log('EDIT', data);
+            });
+        };
         return CoffeeRestService;
     })();
     var mod = CoffeeRest.module();

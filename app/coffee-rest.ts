@@ -8,7 +8,7 @@ class CoffeeRest {
     static module() {
         if (this.ngModule != null) return this.ngModule;
         this.ngModule = angular.module('coffeeRest', ['ngResource']);
-        this.ngModule.service('$coffee', ['$resource', CoffeeRestService]);
+        this.ngModule.service('$coffee', ['$resource', '$http', CoffeeRestService]);
         return this.ngModule;
     }
 }
@@ -18,7 +18,9 @@ class CoffeeRestService {
     model;
     util;
     lang;
-    constructor($resource) {
+    $http;
+    constructor($resource, $http) {
+        this.$http = $http;
         this.config = $resource('/coffee.api.config/:section/:subsection/:param');
         this.lang = $resource('/coffee.api.lang/:section/:subsection/:param', {}, {
             getValue: {
@@ -29,6 +31,17 @@ class CoffeeRestService {
         });
         this.model = $resource('/coffee.api.model/:name/:method/:fieldset');
         this.util = $resource('/coffee.api.util/:name/:method');
+    }
+
+    edit(model: string, id: number, obj: any) {
+        this.$http({
+            method: 'POST',
+            url: '/coffee.api.model/'+model+'/editById',
+            data: obj,
+            params: {id: id}
+        }).success((data) => {
+            console.log('EDIT', data);
+        });
     }
 }
 
