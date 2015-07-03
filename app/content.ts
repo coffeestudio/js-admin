@@ -21,7 +21,7 @@ class Content {
             controller: 'CoffeeModelContentCtrl'
           })
           .state('content-model.edit', {
-            url: '/model/:name/:id/edit',
+            url: '/:id/edit',
             templateUrl: 'app/templates/content-model/edit.html',
             controller: 'CoffeeModelContentEditCtrl'
           });
@@ -36,7 +36,21 @@ class Content {
             });
             $coffee.model.get({name: $scope.name, method: 'getList', fieldset: '@listView'}, (data) => {
                 $scope.rows = data.model;
+                if ($scope.rows.length > 0) {
+                    $coffee.lang.get({section: 'fields', subsection: $scope.name}, (data) => {
+                        var ths = {};
+                        for (var k in $scope.rows[0]) {
+                            if (k == '$$hashKey') continue;
+                            ths[k] = data[k];
+                        }
+                        $scope.ths = ths;
+                    });
+                }
             });
+            $scope.makeEditSref = (row) => {
+                var params = angular.toJson({id: row.id});
+                return 'content-model.edit('+params+')';
+            }
         }])
         /* Edit */
         .controller('CoffeeModelContentEditCtrl', ['$scope', '$stateParams', '$coffee', ($scope, $stateParams, $coffee) => {
