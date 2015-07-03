@@ -1,3 +1,7 @@
-<h2>{{modelTitle}} &rarr; Редактирование</h2>
+<h2>{{modelTitle}} &rarr; {{object.id}} {{object.title}} &rarr; Редактирование</h2>
 <table>
 </table>
+<form class="object-edit">
+  <div class="field {{types[k]}}" ng-repeat="(k, v) in object"><label>{{labels[k]}}</label><coffee-input name="{{k}}" value="{{v}}" type="{{types[k]}}"/></div>
+  <div class="submit"><input type="submit" value="Сохранить"/></div>
+</form>

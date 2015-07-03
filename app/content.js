@@ -14,12 +14,20 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
             this.ngModule.config(['$stateProvider', '$locationProvider', function ($stateProvider, $locationProvider) {
                 $stateProvider.state('content-model', {
                     url: '/model/:name',
-                    templateUrl: 'app/templates/content-model/list.html',
-                    controller: 'CoffeeModelContentCtrl'
+                    views: {
+                        'content@': {
+                            templateUrl: 'app/templates/content-model/list.html',
+                            controller: 'CoffeeModelContentCtrl'
+                        }
+                    }
                 }).state('content-model.edit', {
                     url: '/:id/edit',
-                    templateUrl: 'app/templates/content-model/edit.html',
-                    controller: 'CoffeeModelContentEditCtrl'
+                    views: {
+                        'content@': {
+                            templateUrl: 'app/templates/content-model/edit.html',
+                            controller: 'CoffeeModelContentEditCtrl'
+                        }
+                    }
                 });
                 $locationProvider.html5Mode(true);
             }]).controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$coffee', function ($scope, $stateParams, $coffee) {
@@ -47,7 +55,47 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                 };
             }]).controller('CoffeeModelContentEditCtrl', ['$scope', '$stateParams', '$coffee', function ($scope, $stateParams, $coffee) {
                 angular.extend($scope, $stateParams);
-            }]);
+                $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
+                    $scope.modelTitle = data.value;
+                });
+                $coffee.model.get({ name: $scope.name, method: 'get', fieldset: '@editView', id: $stateParams.id }, function (data) {
+                    if (data.model.length > 0) {
+                        $scope.object = data.model[0];
+                        $scope.types = data.types;
+                        $coffee.lang.get({ section: 'fields', subsection: $scope.name }, function (data) {
+                            var labels = {};
+                            for (var k in $scope.object) {
+                                if (k == '$$hashKey')
+                                    continue;
+                                labels[k] = data[k];
+                            }
+                            $scope.labels = labels;
+                        });
+                    }
+                });
+            }]).directive('coffeeInput', function () {
+                return {
+                    restrict: 'E',
+                    replace: true,
+                    scope: { name: '@', value: '@', type: '@' },
+                    link: function (scope, elem, attr) {
+                        var tpl;
+                        switch (scope.type) {
+                            case 'boolean':
+                                var ck = { 'true': '', 'false': '' };
+                                ck[scope.value] = ' checked="true"';
+                                tpl = '<label class="bool"><input' + ck['true'] + ' type="radio" name="' + scope.name + '" value="1"/> да</label>' + '<label class="bool"><input' + ck['false'] + ' type="radio" name="' + scope.name + '" value="0"/> нет</label>';
+                                break;
+                            case 'text':
+                                tpl = '<textarea name="' + scope.name + '">' + scope.value + '</textarea>';
+                                break;
+                            default:
+                                tpl = '<input type="text" name="' + scope.name + '" value="' + scope.value + '"/>';
+                        }
+                        elem.append(tpl);
+                    }
+                };
+            });
             return this.ngModule;
         };
         Content.ngModule = null;

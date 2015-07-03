@@ -303,3 +303,31 @@ CONTENT
     background: @odd-color;
   }
 }
+
+form.object-edit {
+  .field {
+    > label {
+      display: block;
+      font-size: 80%;
+      margin-bottom: -5px;
+    }
+    input[type=text] {
+      width: 500px;
+    }
+    textarea {
+      width: 500px;
+      height: 10em;
+    }
+  }
+  .field.boolean {
+    .bool {
+      margin-right: 15px;
+      input {
+        margin: 0;
+      }
+    }
+  }
+  .submit {
+    margin-top: 5px;
+  }
+}
