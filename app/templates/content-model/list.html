@@ -1,13 +1,16 @@
 <h2>{{modelTitle}} &rarr; Список</h2>
-<a class="fa fa-add" ui-sref="content-model.add">Добавить</a>
+<a class="fa fa-plus-circle" ui-sref="content-model.add">&nbsp;Добавить</a>
 <table class="content-list">
   <tbody>
     <tr>
         <th ng-repeat="th in ths">{{th}}</th>
     </tr>
-    <tr ng-repeat="row in rows" ng-class="{even: $even, odd: $odd}">
+    <tr ng-repeat="(rowId, row) in rows" ng-class="{even: $even, odd: $odd}">
         <td ng-repeat="col in row">{{col}}</td>
-        <td class="actions"><a class="fa fa-edit" ui-sref="{{makeEditSref(row)}}">править</a></td>
+        <td class="actions">
+            <a class="fa fa-edit" ui-sref="{{makeEditSref(row)}}">&nbsp;Править</a>
+            <a class="fa fa-trash" ng-click="delete(rowId)">&nbsp;Удалить</a>
+        </td>
     </tr>
   </tbody>
 </table>

@@ -46,7 +46,7 @@ class Content {
           $locationProvider.html5Mode(true);
         }])
         /* List */
-        .controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$coffee', ($scope, $stateParams, $coffee) => {
+        .controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$notify', '$coffee', ($scope, $stateParams, $notify, $coffee) => {
             angular.extend($scope, $stateParams);
             $coffee.lang.getValue({section: 'models', subsection: $scope.name}, (data) => {
                 $scope.modelTitle = data.value;
@@ -67,6 +67,16 @@ class Content {
             $scope.makeEditSref = (row) => {
                 var params = angular.toJson({id: row.id});
                 return 'content-model.edit('+params+')';
+            }
+            $scope.delete = (rowId) => {
+                $coffee.delete($scope.name, $scope.rows[rowId].id).success((data) => {
+                    if (data.type == 'model') {
+                        $scope.rows.splice(rowId, 1);
+                        $notify.push('Удалено', true);
+                    } else {
+                        $notify.push('Ошибка', false);
+                    }
+                });
             }
         }])
         /* Edit */

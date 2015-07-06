@@ -38,7 +38,7 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                     }
                 });
                 $locationProvider.html5Mode(true);
-            }]).controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$coffee', function ($scope, $stateParams, $coffee) {
+            }]).controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$notify', '$coffee', function ($scope, $stateParams, $notify, $coffee) {
                 angular.extend($scope, $stateParams);
                 $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
                     $scope.modelTitle = data.value;
@@ -60,6 +60,17 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                 $scope.makeEditSref = function (row) {
                     var params = angular.toJson({ id: row.id });
                     return 'content-model.edit(' + params + ')';
+                };
+                $scope.delete = function (rowId) {
+                    $coffee.delete($scope.name, $scope.rows[rowId].id).success(function (data) {
+                        if (data.type == 'model') {
+                            $scope.rows.splice(rowId, 1);
+                            $notify.push('Удалено', true);
+                        }
+                        else {
+                            $notify.push('Ошибка', false);
+                        }
+                    });
                 };
             }]).controller('CoffeeModelContentEditCtrl', ['$scope', '$notify', '$stateParams', '$coffee', function ($scope, $notify, $stateParams, $coffee) {
                 angular.extend($scope, $stateParams);

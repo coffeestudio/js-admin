@@ -49,6 +49,14 @@ class CoffeeRestService {
             data: obj
         });
     }
+
+    delete(model: string, id: number) {
+        return this.$http({
+            method: 'POST',
+            url: '/coffee.api.model/'+model+'/delete',
+            params: {id: id}
+        });
+    }
 }
 
 var mod = CoffeeRest.module();

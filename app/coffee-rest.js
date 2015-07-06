@@ -43,6 +43,13 @@ define(["require", "exports", 'angular', "angular-resource"], function (require,
                 data: obj
             });
         };
+        CoffeeRestService.prototype.delete = function (model, id) {
+            return this.$http({
+                method: 'POST',
+                url: '/coffee.api.model/' + model + '/delete',
+                params: { id: id }
+            });
+        };
         return CoffeeRestService;
     })();
     var mod = CoffeeRest.module();
