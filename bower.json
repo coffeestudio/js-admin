@@ -24,6 +24,8 @@
     "angular-resource": "*",
     "angular-ui-router": "*",
     "angular-ui-sortable": "*",
+    "ckeditor": "*",
+    "ng-ckeditor": "*",
     "jquery": "^2.1",
     "jquery-ui": "^1.11",
     "requirejs": "*",

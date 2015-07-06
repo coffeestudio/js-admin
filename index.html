@@ -33,7 +33,7 @@
 						<div class="site">Сайт: <a href="/" ng-bind="siteTitle"></a></div>
 					</div>
 					<div class="uk-width-medium-4-10 uk-width-small-10-10 icons">
-						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Карта сайта">
+<!--						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Карта сайта">
 							<span class="uk-icon-sitemap"></span>
 						</a>
 						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Настройки сайта">
@@ -47,7 +47,7 @@
 						</a>
 						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Помощь">
 							<span class="uk-icon-question-circle"></span>
-						</a>
+						</a>-->
 						<a href="#" class="uk-hidden-medium uk-hidden-large" data-uk-tooltip="{pos:'bottom'}" title="Выход">
 							<span class="uk-icon-sign-out"></span>
 						</a>
@@ -73,8 +73,9 @@
                 <ul class="root">
                     <li coffee-side-block-tree="node in block.children at ul" ng-class="{parent: node.children}">
                         <a ui-sref="{{makeSref(node)}}">
-                            <i class="uk-icon-external-link"></i> <span ng-bind="node.title"></span>
-                            <span class="uk-badge">1</span>
+                            <!--<i class="uk-icon-external-link"></i> <span ng-bind="node.title"></span>-->
+							<span ng-bind="node.title"></span>
+                            <!--<span class="uk-badge">1</span>-->
                             <b ng-if="node.children" class="uk-icon-angle-right"></b>
                         </a>
                         <ul class="submenu"></ul>
