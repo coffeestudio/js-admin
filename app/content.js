@@ -53,7 +53,7 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                     var params = angular.toJson({ id: row.id });
                     return 'content-model.edit(' + params + ')';
                 };
-            }]).controller('CoffeeModelContentEditCtrl', ['$scope', '$stateParams', '$coffee', function ($scope, $stateParams, $coffee) {
+            }]).controller('CoffeeModelContentEditCtrl', ['$scope', '$notify', '$stateParams', '$coffee', function ($scope, $notify, $stateParams, $coffee) {
                 angular.extend($scope, $stateParams);
                 $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
                     $scope.modelTitle = data.value;
@@ -74,8 +74,14 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                     }
                 });
                 $scope.save = function (obj) {
-                    console.log('SAVE');
-                    $coffee.edit($scope.name, $scope.id, obj);
+                    $coffee.edit($scope.name, $scope.id, obj).success(function (data) {
+                        if (data.type == 'model') {
+                            $notify.push('Сохранено', true);
+                        }
+                        else {
+                            $notify.push('Ошибка', false);
+                        }
+                    });
                 };
             }]).directive('coffeeInput', function ($compile) {
                 return {

@@ -29,13 +29,11 @@ define(["require", "exports", 'angular', "angular-resource"], function (require,
             this.util = $resource('/coffee.api.util/:name/:method');
         }
         CoffeeRestService.prototype.edit = function (model, id, obj) {
-            this.$http({
+            return this.$http({
                 method: 'POST',
-                url: '/coffee.api.model/' + model + '/editById',
+                url: '/coffee.api.model/' + model + '/edit/@editView',
                 data: obj,
                 params: { id: id }
-            }).success(function (data) {
-                console.log('EDIT', data);
             });
         };
         return CoffeeRestService;

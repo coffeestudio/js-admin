@@ -34,13 +34,11 @@ class CoffeeRestService {
     }
 
     edit(model: string, id: number, obj: any) {
-        this.$http({
+        return this.$http({
             method: 'POST',
-            url: '/coffee.api.model/'+model+'/editById',
+            url: '/coffee.api.model/'+model+'/edit/@editView',
             data: obj,
             params: {id: id}
-        }).success((data) => {
-            console.log('EDIT', data);
         });
     }
 }

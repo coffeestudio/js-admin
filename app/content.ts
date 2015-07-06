@@ -61,7 +61,7 @@ class Content {
             }
         }])
         /* Edit */
-        .controller('CoffeeModelContentEditCtrl', ['$scope', '$stateParams', '$coffee', ($scope, $stateParams, $coffee) => {
+        .controller('CoffeeModelContentEditCtrl', ['$scope', '$notify', '$stateParams', '$coffee', ($scope, $notify, $stateParams, $coffee) => {
             angular.extend($scope, $stateParams);
             $coffee.lang.getValue({section: 'models', subsection: $scope.name}, (data) => {
                 $scope.modelTitle = data.value;
@@ -81,8 +81,13 @@ class Content {
                 }
             });
             $scope.save = (obj) => {
-                console.log('SAVE');
-                $coffee.edit($scope.name, $scope.id, obj);
+                $coffee.edit($scope.name, $scope.id, obj).success((data) => {
+                    if (data.type == 'model') {
+                        $notify.push('Сохранено', true);
+                    } else {
+                        $notify.push('Ошибка', false);
+                    }
+                });
             };
         }])
         .directive('coffeeInput', ($compile) => {

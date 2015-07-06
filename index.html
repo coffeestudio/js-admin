@@ -93,6 +93,10 @@
 	<div ui-view="content" class="adm-box-content uk-container">
 		<div>Добро пожаловать.</div>
 	</div><!-- /end .adm-box-content.uk-container -->
+
+	<div coffee-flash="flash" id="notificator" ng-show="show">
+		<span class="message" ng-class="{'uk-badge-success': success, 'uk-badge-warning': !success}" ng-bind="message"></span>
+	</div>
 </section><!-- /end .adm-container -->
 
 </body>

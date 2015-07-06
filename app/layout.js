@@ -33,13 +33,62 @@ define(["require", "exports", 'angular', 'jquery', "angular-ui-router", "angular
                     $scope.siteTitle = data.siteTitle;
                 });
             }]).controller('CoffeeMainContentCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
-            }]);
+            }]).factory('$notify', ['$rootScope', function ($rootScope) { return new Notificator($rootScope); }]).directive('coffeeFlash', function () {
+                return {
+                    restrict: 'A',
+                    transclude: true,
+                    scope: true,
+                    link: function (scope, elem, attrs, ctrl, transclude) {
+                        scope.$on('notice:new', function (ev, data) {
+                            scope.message = data.message;
+                            scope.success = data.success;
+                            scope.show = true;
+                            $(elem).fadeIn(500).delay(500).fadeOut(500, function () {
+                                scope.show = false;
+                            });
+                        });
+                        transclude(scope, function (el) {
+                            elem.append(el);
+                        });
+                    }
+                };
+            });
             return this.ngModule;
         };
         Layout.ngModule = null;
         return Layout;
     })();
     var mod = Layout.module();
+    var Notificator = (function () {
+        function Notificator($rootScope) {
+            this.messages = [];
+            this.msgCount = 0;
+            this.$rootScope = $rootScope;
+        }
+        Notificator.prototype.push = function (message, success) {
+            if (success === void 0) { success = true; }
+            var msg = new NMessage(message, success);
+            this.messages.push(msg);
+            this.msgCount++;
+            this.$rootScope.$broadcast('notice:new', msg);
+            return msg;
+        };
+        Notificator.prototype.getLastMessage = function () {
+            if (this.msgCount == 0)
+                return null;
+            return this.messages[this.msgCount - 1];
+        };
+        return Notificator;
+    })();
+    var NMessage = (function () {
+        function NMessage(message, success) {
+            if (success === void 0) { success = true; }
+            this.success = true;
+            this.message = message;
+            this.success = success;
+        }
+        return NMessage;
+    })();
     /* TODO: Move to angular */
     $(document).ready(function () {
         $(window).resize(function () {
