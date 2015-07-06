@@ -28,6 +28,14 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                             controller: 'CoffeeModelContentEditCtrl'
                         }
                     }
+                }).state('content-model.add', {
+                    url: '/add',
+                    views: {
+                        'content@': {
+                            templateUrl: 'app/templates/content-model/edit.html',
+                            controller: 'CoffeeModelContentAddCtrl'
+                        }
+                    }
                 });
                 $locationProvider.html5Mode(true);
             }]).controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$coffee', function ($scope, $stateParams, $coffee) {
@@ -55,6 +63,7 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                 };
             }]).controller('CoffeeModelContentEditCtrl', ['$scope', '$notify', '$stateParams', '$coffee', function ($scope, $notify, $stateParams, $coffee) {
                 angular.extend($scope, $stateParams);
+                $scope.mode = 'Редактирование';
                 $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
                     $scope.modelTitle = data.value;
                 });
@@ -77,6 +86,38 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                     $coffee.edit($scope.name, $scope.id, obj).success(function (data) {
                         if (data.type == 'model') {
                             $notify.push('Сохранено', true);
+                        }
+                        else {
+                            $notify.push('Ошибка', false);
+                        }
+                    });
+                };
+            }]).controller('CoffeeModelContentAddCtrl', ['$scope', '$notify', '$state', '$stateParams', '$coffee', function ($scope, $notify, $state, $stateParams, $coffee) {
+                angular.extend($scope, $stateParams);
+                $scope.mode = 'Добавление';
+                $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
+                    $scope.modelTitle = data.value;
+                });
+                $coffee.model.get({ name: $scope.name, method: 'schema', fieldset: '@editView' }, function (data) {
+                    if (data.model.length > 0) {
+                        $scope.object = data.model[0];
+                        $scope.types = data.types;
+                        $coffee.lang.get({ section: 'fields', subsection: $scope.name }, function (data) {
+                            var labels = {};
+                            for (var k in $scope.object) {
+                                if (k == '$$hashKey')
+                                    continue;
+                                labels[k] = data[k];
+                            }
+                            $scope.labels = labels;
+                        });
+                    }
+                });
+                $scope.save = function (obj) {
+                    $coffee.add($scope.name, obj).success(function (data) {
+                        if (data.type == 'model') {
+                            $notify.push('Сохранено', true);
+                            $state.go('content-model.edit', { id: data.model[0].id });
                         }
                         else {
                             $notify.push('Ошибка', false);

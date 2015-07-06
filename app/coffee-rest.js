@@ -36,6 +36,13 @@ define(["require", "exports", 'angular', "angular-resource"], function (require,
                 params: { id: id }
             });
         };
+        CoffeeRestService.prototype.add = function (model, obj) {
+            return this.$http({
+                method: 'POST',
+                url: '/coffee.api.model/' + model + '/add/@editView',
+                data: obj
+            });
+        };
         return CoffeeRestService;
     })();
     var mod = CoffeeRest.module();

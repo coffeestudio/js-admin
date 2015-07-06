@@ -41,6 +41,14 @@ class CoffeeRestService {
             params: {id: id}
         });
     }
+
+    add(model: string, obj: any) {
+        return this.$http({
+            method: 'POST',
+            url: '/coffee.api.model/'+model+'/add/@editView',
+            data: obj
+        });
+    }
 }
 
 var mod = CoffeeRest.module();
