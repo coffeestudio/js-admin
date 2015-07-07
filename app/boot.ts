@@ -8,7 +8,9 @@ requirejs.config({
         'angular-ui-sortable': 'components/angular-ui-sortable/sortable.min',
         'jquery': 'components/jquery/dist/jquery.min',
         'jquery-ui': 'components/jquery-ui/jquery-ui.min',
-        'slidebars': 'components/slidebars/dist/slidebars.min'
+        'slidebars': 'components/slidebars/dist/slidebars.min',
+        'ckeditor': 'components/ckeditor/ckeditor',
+        'ng-ckeditor': 'components/ng-ckeditor/ng-ckeditor.min'
     },
     shim: {
         'angular': {
@@ -32,6 +34,9 @@ requirejs.config({
         },
         'slidebars': {
             deps: ['jquery']
+        },
+        'ng-ckeditor': {
+            deps: ['ckeditor']
         }
     }
 });

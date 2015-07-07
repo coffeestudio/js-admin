@@ -1,3 +1,4 @@
+/// <reference path="../widget.d.ts"/>
 define(["require", "exports"], function (require, exports) {
     var Tree = (function () {
         function Tree($scope, $attrs, $http) {
@@ -9,13 +10,14 @@ define(["require", "exports"], function (require, exports) {
             this.objModel = $attrs.objModel;
             this.contentModel = $attrs.contentModel ? $attrs.contentModel : this.objModel;
             this.activeId = $attrs.activeId;
+            this.flat = $attrs.flat == 'true' ? true : false;
             this.baseURL = '/adm/content/' + this.contentModel;
         }
         Tree.prototype.init = function (data) {
             var _this = this;
             this.loadTitle();
             this.loadActive();
-            this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel/').success(function (data) {
+            this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel').success(function (data) {
                 _this.topLevel = data.model.map(function (el) { return new Node(el, _this); });
             });
         };

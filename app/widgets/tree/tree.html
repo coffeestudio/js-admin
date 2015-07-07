@@ -8,7 +8,7 @@
 <nav>
     <h1>{{w.treeTitle}}</h1>
     <ul id="section">
-        <li class="root" ng-class="{active: true}">
+        <li ng-if="! w.flat" class="root" ng-class="{active: true}">
             <a class="dyn" href="{{w.baseURL}}/">Корень</a>
         </li>
         <li ng-repeat="node in w.topLevel" ng-include="'{{tplId}}'" ng-class="{active: node.isActive()}"></li>

@@ -3,14 +3,15 @@
 /// <amd-dependency path="angular-ui-router"/>
 /// <amd-dependency path="angular-ui-sortable"/>
 /// <amd-dependency path="jquery-ui"/>
-define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortable", "jquery-ui"], function (require, exports, angular) {
+/// <amd-dependency path="ng-ckeditor"/>
+define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortable", "jquery-ui", "ng-ckeditor"], function (require, exports, angular) {
     var Content = (function () {
         function Content() {
         }
         Content.module = function () {
             if (this.ngModule != null)
                 return this.ngModule;
-            this.ngModule = angular.module('coffeeContent', ['ui.router']);
+            this.ngModule = angular.module('coffeeContent', ['ui.router', 'ngCkeditor']);
             this.ngModule.config(['$stateProvider', '$locationProvider', function ($stateProvider, $locationProvider) {
                 $stateProvider.state('content-model', {
                     url: '/model/:name',
@@ -135,27 +136,43 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                         }
                     });
                 };
-            }]).directive('coffeeInput', function ($compile) {
+            }]).constant('ckConfig', {
+                defaultLanguage: 'ru',
+                language: 'ru',
+                width: '50%',
+                height: '200px'
+            }).directive('coffeeInput', ['$compile', 'ckConfig', function ($compile, ckConfig) {
                 return {
                     restrict: 'E',
                     replace: true,
-                    scope: { name: '@', value: '=', type: '@' },
+                    scope: { name: '@', value: '=', type: '@', ckopts: '=' },
                     link: function (scope, elem, attr) {
+                        scope.ckopts = ckConfig;
                         var tpl;
                         switch (scope.type) {
                             case 'boolean':
                                 tpl = '<label class="bool"><input ng-model="value" type="radio" name="' + scope.name + '" value="1"/> да</label>' + '<label class="bool"><input ng-model="value" type="radio" name="' + scope.name + '" value="0"/> нет</label>';
                                 break;
+                            case 'richtext':
+                                tpl = '<textarea ckeditor="ckopts" ng-model="value" name="' + scope.name + '"></textarea>';
+                                break;
                             case 'text':
                                 tpl = '<textarea ng-model="value" name="' + scope.name + '"></textarea>';
                                 break;
                             default:
-                                tpl = '<input ng-model="value" type="text" name="' + scope.name + '"/>';
+                                var ms;
+                                if (ms = scope.type.match('n-to-1:(.*)')) {
+                                    var objModel = ms[1];
+                                    tpl = '<coffee-widget name="flat-selector" bind-to="value" obj-model="' + objModel + '"></coffee-widget>';
+                                }
+                                else {
+                                    tpl = '<input ng-model="value" type="text" name="' + scope.name + '"/>';
+                                }
                         }
                         elem.append($compile(tpl)(scope));
                     }
                 };
-            });
+            }]);
             return this.ngModule;
         };
         Content.ngModule = null;

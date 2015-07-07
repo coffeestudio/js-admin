@@ -4,6 +4,7 @@ class Tree implements IWidget {
     objModel: string;
     contentModel: string;
     activeId: number;
+    flat: boolean;
     treeTitle: string;
     baseURL: string;
     scope: any;
@@ -20,13 +21,14 @@ class Tree implements IWidget {
         this.objModel = $attrs.objModel;
         this.contentModel = $attrs.contentModel ? $attrs.contentModel : this.objModel;
         this.activeId = $attrs.activeId;
+        this.flat = $attrs.flat == 'true' ? true : false;
         this.baseURL = '/adm/content/' + this.contentModel;
     }
 
     init(data: any) {
         this.loadTitle();
         this.loadActive();
-        this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel/').success(data => {
+        this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel').success(data => {
             this.topLevel = data.model.map(el => new Node(el, this));
         });
     }

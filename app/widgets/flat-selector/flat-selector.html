@@ -1,0 +1,4 @@
+<select ng-model="bindTo">
+    <option value="0" ng-if="allowEmpty">Нет</option>
+    <option ng-repeat="node in w.nodes" ng-selected="node.isActive()" ng-bind="node.title" value="{{node.id}}"></option>
+</select>

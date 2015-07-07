@@ -18,7 +18,7 @@ define(["require", "exports", 'angular'], function (require, exports, angular) {
             this.ngModule.directive('coffeeWidget', function () {
                 return {
                     restrict: 'E',
-                    scope: {},
+                    scope: { 'bindTo': '=' },
                     transclude: true,
                     templateUrl: function (elem, attr) { return _this.widgetPrefix + '/' + attr.name + '/' + attr.name + '.html'; },
                     controller: ['$attrs', '$scope', '$injector', '$q', function ($attrs, $scope, $injector, $q) {

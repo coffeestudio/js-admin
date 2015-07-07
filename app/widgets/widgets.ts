@@ -19,7 +19,7 @@ class Widgets {
         this.ngModule.directive('coffeeWidget', () => {
             return {
                   restrict: 'E'
-                , scope: {}
+                , scope: { 'bindTo': '=' }
                 , transclude: true
                 , templateUrl: (elem, attr) => this.widgetPrefix + '/' + attr.name + '/' + attr.name + '.html'
                 , controller: ['$attrs', '$scope', '$injector', '$q', ($attrs, $scope, $injector, $q) => {
