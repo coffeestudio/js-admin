@@ -6,15 +6,16 @@ class Tree implements IWidget {
     activeId: number;
     flat: boolean;
     treeTitle: string;
-    baseURL: string;
     scope: any;
+    rootScope: any;
     http: any;
     topLevel: Array<Node>;
     activeNode: Node;
-    $inject: string[] = ['$scope', '$attrs', '$http'];
+    $inject: string[] = ['$scope', '$rootScope', '$attrs', '$http'];
 
-    constructor($scope, $attrs, $http) {
+    constructor($scope, $rootScope, $attrs, $http) {
         this.scope = $scope;
+        this.rootScope = $rootScope;
         this.http = $http;
         $scope.w = this;
         $scope.tplId = 'tree-li-template-' + $scope.widgetId;
@@ -22,7 +23,6 @@ class Tree implements IWidget {
         this.contentModel = $attrs.contentModel ? $attrs.contentModel : this.objModel;
         this.activeId = $attrs.activeId;
         this.flat = $attrs.flat == 'true' ? true : false;
-        this.baseURL = '/adm/content/' + this.contentModel;
     }
 
     init(data: any) {
@@ -31,6 +31,16 @@ class Tree implements IWidget {
         this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel').success(data => {
             this.topLevel = data.model.map(el => new Node(el, this));
         });
+    }
+
+    toggleNode(n: Node) {
+        var id = n.isActive() ? 0 : n.id;
+        this.activeId = id;
+        this.rootScope.$broadcast('filter:update', {section: id});
+    }
+
+    resetNode() {
+        this.activeId = 0;
     }
 
     private loadTitle() {
@@ -64,7 +74,6 @@ class Node {
     pathArr: string[];
     leaf: boolean;
     mark: string;
-    url: string;
     level: number;
     tree: Tree;
     children: Array<Node>;
@@ -80,13 +89,13 @@ class Node {
         this.fullpath.split('/').forEach(s => (s != '') && this.pathArr.push(s));
         this.leaf = model.leaf;
         this.mark = model.mark;
-        this.url = tree.baseURL + this.fullpath;
         this.tree = tree;
         this.level = level;
         this.tree.scope.$watch(() => { return this.isActive() }, () => { if (this.isActive()) this.expandSubtree() });
     }
 
     isActive() {
+        if (this.tree.activeId == this.id) return true;
         if (! this.tree.activeNode) return false;
         return this.tree.activeNode.pathArr[this.level] == this.path;
     }

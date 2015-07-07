@@ -14,7 +14,7 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
             this.ngModule = angular.module('coffeeContent', ['ui.router', 'ngCkeditor']);
             this.ngModule.config(['$stateProvider', '$locationProvider', function ($stateProvider, $locationProvider) {
                 $stateProvider.state('content-model', {
-                    url: '/model/:name',
+                    url: '/model/:name?filter',
                     views: {
                         'content@': {
                             templateUrl: 'app/templates/content-model/list.html',
@@ -39,12 +39,42 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                     }
                 });
                 $locationProvider.html5Mode(true);
-            }]).controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$notify', '$coffee', function ($scope, $stateParams, $notify, $coffee) {
+            }]).filter('flatJsUri', function () {
+                return function (input) {
+                    var out = '';
+                    var first = true;
+                    for (var k in input) {
+                        if (!first)
+                            out += ',';
+                        out += k + ':' + input[k];
+                        first = false;
+                    }
+                    return out;
+                };
+            }).filter('parseJsUri', function () {
+                return function (input) {
+                    var out = {};
+                    input.split(',').forEach(function (pair) {
+                        var p = pair.split(':');
+                        out[p[0]] = p[1];
+                    });
+                    return out;
+                };
+            }).controller('CoffeeModelContentCtrl', ['$scope', '$filter', '$stateParams', '$state', '$notify', '$coffee', function ($scope, $filter, $stateParams, $state, $notify, $coffee) {
                 angular.extend($scope, $stateParams);
+                var contentFilter = $filter('parseJsUri')($scope.filter);
+                $scope.$on('filter:update', function (ev, patch) {
+                    $state.go('content-model', { id: $stateParams.id, filter: $filter('flatJsUri')(patch) });
+                });
                 $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
                     $scope.modelTitle = data.value;
                 });
-                $coffee.model.get({ name: $scope.name, method: 'getList', fieldset: '@listView' }, function (data) {
+                var reqParams = { name: $scope.name, method: 'getList', fieldset: '@listView' };
+                if (typeof (contentFilter.section) != 'undefined' && contentFilter.section != 0) {
+                    reqParams['section'] = contentFilter.section;
+                    reqParams['method'] = 'getListBySection';
+                }
+                $coffee.model.get(reqParams, function (data) {
                     $scope.rows = data.model;
                     if ($scope.rows.length > 0) {
                         $coffee.lang.get({ section: 'fields', subsection: $scope.name }, function (data) {

@@ -1,9 +1,10 @@
 /// <reference path="../widget.d.ts"/>
 define(["require", "exports"], function (require, exports) {
     var Tree = (function () {
-        function Tree($scope, $attrs, $http) {
-            this.$inject = ['$scope', '$attrs', '$http'];
+        function Tree($scope, $rootScope, $attrs, $http) {
+            this.$inject = ['$scope', '$rootScope', '$attrs', '$http'];
             this.scope = $scope;
+            this.rootScope = $rootScope;
             this.http = $http;
             $scope.w = this;
             $scope.tplId = 'tree-li-template-' + $scope.widgetId;
@@ -11,7 +12,6 @@ define(["require", "exports"], function (require, exports) {
             this.contentModel = $attrs.contentModel ? $attrs.contentModel : this.objModel;
             this.activeId = $attrs.activeId;
             this.flat = $attrs.flat == 'true' ? true : false;
-            this.baseURL = '/adm/content/' + this.contentModel;
         }
         Tree.prototype.init = function (data) {
             var _this = this;
@@ -20,6 +20,14 @@ define(["require", "exports"], function (require, exports) {
             this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel').success(function (data) {
                 _this.topLevel = data.model.map(function (el) { return new Node(el, _this); });
             });
+        };
+        Tree.prototype.toggleNode = function (n) {
+            var id = n.isActive() ? 0 : n.id;
+            this.activeId = id;
+            this.rootScope.$broadcast('filter:update', { section: id });
+        };
+        Tree.prototype.resetNode = function () {
+            this.activeId = 0;
         };
         Tree.prototype.loadTitle = function () {
             var _this = this;
@@ -51,7 +59,6 @@ define(["require", "exports"], function (require, exports) {
             this.fullpath.split('/').forEach(function (s) { return (s != '') && _this.pathArr.push(s); });
             this.leaf = model.leaf;
             this.mark = model.mark;
-            this.url = tree.baseURL + this.fullpath;
             this.tree = tree;
             this.level = level;
             this.tree.scope.$watch(function () {
@@ -62,6 +69,8 @@ define(["require", "exports"], function (require, exports) {
             });
         }
         Node.prototype.isActive = function () {
+            if (this.tree.activeId == this.id)
+                return true;
             if (!this.tree.activeNode)
                 return false;
             return this.tree.activeNode.pathArr[this.level] == this.path;

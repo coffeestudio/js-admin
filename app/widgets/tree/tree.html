@@ -1,15 +1,15 @@
 <script id="{{tplId}}" type="text/ng-template">
     <span class="leaf" ng-if="node.leaf"></span>
     <a class="plus" ng-class="{plus: ! node.childrenVisible, minus: node.childrenVisible}" ng-click="node.toggleSubtree()" ng-if="! node.leaf"></a>
-    <a class="dyn" href="{{node.url}}">{{node.title}}</a>
+    <a class="dyn" ng-click="w.toggleNode(node)">{{node.title}}</a>
     <span ng-if="node.hasMark()" ng-bind="node.mark" class="mark"></span>
     <ul ng-if="node.childrenVisible"><li ng-class="{active: node.isActive()}" ng-repeat="node in node.children" ng-include="'{{tplId}}'"></li></ul>
 </script>
 <nav>
     <h1>{{w.treeTitle}}</h1>
-    <ul id="section">
+    <ul class="section">
         <li ng-if="! w.flat" class="root" ng-class="{active: true}">
-            <a class="dyn" href="{{w.baseURL}}/">Корень</a>
+            <a class="dyn" ng-click="w.resetNode()">Корень</a>
         </li>
         <li ng-repeat="node in w.topLevel" ng-include="'{{tplId}}'" ng-class="{active: node.isActive()}"></li>
     </ul>

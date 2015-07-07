@@ -17,7 +17,7 @@ class Content {
         .config(['$stateProvider', '$locationProvider', function($stateProvider, $locationProvider) {
           $stateProvider
           .state('content-model', {
-              url: '/model/:name',
+              url: '/model/:name?filter',
               views: {
                   'content@' : {
                       templateUrl: 'app/templates/content-model/list.html',
@@ -46,13 +46,45 @@ class Content {
 
           $locationProvider.html5Mode(true);
         }])
+        .filter('flatJsUri', () => {
+            return (input) => {
+                var out = '';
+                var first = true;
+                for (var k in input) {
+                    if (! first) out += ',';
+                    out += k + ':' + input[k];
+                    first = false;
+                }
+                return out;
+            }
+        })
+        .filter('parseJsUri', () => {
+            return (input) => {
+                var out = {};
+                input.split(',').forEach((pair) => {
+                    var p = pair.split(':');
+                    out[p[0]] = p[1];
+                });
+                return out;
+            }
+        })
         /* List */
-        .controller('CoffeeModelContentCtrl', ['$scope', '$stateParams', '$notify', '$coffee', ($scope, $stateParams, $notify, $coffee) => {
+        .controller('CoffeeModelContentCtrl', ['$scope', '$filter', '$stateParams', '$state', '$notify', '$coffee',
+                                              ($scope, $filter, $stateParams, $state, $notify, $coffee) => {
             angular.extend($scope, $stateParams);
+            var contentFilter = $filter('parseJsUri')($scope.filter);
+            $scope.$on('filter:update', (ev, patch) => {
+                $state.go('content-model', {id: $stateParams.id, filter: $filter('flatJsUri')(patch)});
+            });
             $coffee.lang.getValue({section: 'models', subsection: $scope.name}, (data) => {
                 $scope.modelTitle = data.value;
             });
-            $coffee.model.get({name: $scope.name, method: 'getList', fieldset: '@listView'}, (data) => {
+            var reqParams = {name: $scope.name, method: 'getList', fieldset: '@listView'};
+            if (typeof(contentFilter.section) != 'undefined' && contentFilter.section != 0) {
+                reqParams['section'] = contentFilter.section;
+                reqParams['method'] = 'getListBySection';
+            }
+            $coffee.model.get(reqParams, (data) => {
                 $scope.rows = data.model;
                 if ($scope.rows.length > 0) {
                     $coffee.lang.get({section: 'fields', subsection: $scope.name}, (data) => {
