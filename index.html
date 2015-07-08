@@ -7,6 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<title>Admin</title>
 	<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+	<link href="app/components/angular/angular-csp.css" rel="stylesheet"/>
 	<link href="assets/stylesheets/app.css" rel="stylesheet"/>
 	<script type="text/javascript" data-main="app/boot" src="app/components/requirejs/require.js"></script>
 	<!--[if lt IE 9]>
@@ -32,7 +33,13 @@
 						<span class="date">20 мая 2015 г</span>
 						<div class="site">Сайт: <a href="/" ng-bind="siteTitle"></a></div>
 					</div>
-					<div class="uk-width-medium-4-10 uk-width-small-10-10 icons">
+					<div nologin id="auth-form" ng-controller="AuthCtrl">
+						<div>Требуется авторизация</div>
+						<span><input ng-model="login" placeholder="логин" type="text" name="login"/></span>
+						<span><input ng-model="password" placeholder="пароль" type="password" name="password"/></span>
+						<span><input ng-click="doLogin()" type="submit" value="Войти"/></span>
+					</div>
+					<div restricted class="uk-width-medium-4-10 uk-width-small-10-10 icons">
 <!--						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Карта сайта">
 							<span class="uk-icon-sitemap"></span>
 						</a>
@@ -52,20 +59,20 @@
 							<span class="uk-icon-sign-out"></span>
 						</a>
 					</div>
-					<div class="uk-width-medium-2-10 uk-hidden-small">
-						<span class="user">Admin</span>
+					<div class="ng-cloak uk-width-medium-2-10 uk-hidden-small">
+						<span class="user" ng-bind="user.username"></span>
 					</div>
 				</div>
 			</div>
 
-			<div class="uk-width-medium-1-10 uk-hidden-small logout">
-				<a href="#"><span class="uk-icon-sign-out"></span></a>
+			<div restricted ng-controller="LogoutCtrl" class="uk-width-medium-1-10 uk-hidden-small logout">
+				<a ng-click="doLogout()"><span class="uk-icon-sign-out"></span></a>
 			</div>
 		</div>
 	</div>
 </header>
 
-<div id="aside" class="sb-slidebar sb-left" ng-controller="CoffeeSidebarCtrl">
+<div restricted id="aside" class="sb-slidebar sb-left ng-cloak" ng-controller="CoffeeSidebarCtrl">
 	<div class="scrollable">
 		<coffee-side-nav>
 			<section class="sidenav" ng-repeat="block in blocks">
@@ -91,15 +98,15 @@
 	</div>
 </div><!-- /end #aside -->
 
-<section class="adm-container">
-	<div ui-view="content" class="adm-box-content uk-container">
+<section restricted class="adm-container">
+	<div ui-view="content" class="adm-box-content uk-container ng-cloak">
 		<div>Добро пожаловать.</div>
 	</div><!-- /end .adm-box-content.uk-container -->
-
-	<div coffee-flash="flash" id="notificator" ng-show="show">
-		<span class="message" ng-class="{'uk-badge-success': success, 'uk-badge-warning': !success}" ng-bind="message"></span>
-	</div>
 </section><!-- /end .adm-container -->
+
+<div coffee-flash="flash" id="notificator" ng-show="show">
+	<span class="message" ng-class="{'uk-badge-success': success, 'uk-badge-warning': !success}" ng-bind="message"></span>
+</div>
 
 </body>
 </html>

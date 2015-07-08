@@ -61,10 +61,12 @@ class Content {
         .filter('parseJsUri', () => {
             return (input) => {
                 var out = {};
-                input.split(',').forEach((pair) => {
-                    var p = pair.split(':');
-                    out[p[0]] = p[1];
-                });
+                if (typeof(input) == 'string') {
+                    input.split(',').forEach((pair) => {
+                        var p = pair.split(':');
+                        out[p[0]] = p[1];
+                    });
+                }
                 return out;
             }
         })
@@ -199,6 +201,9 @@ class Content {
                             break;
                         case 'text':
                             tpl = '<textarea ng-model="value" name="'+scope.name+'"></textarea>';
+                            break;
+                        case 'password':
+                            tpl = '<input ng-model="value" type="password" name="' + scope.name + '"/>';
                             break;
                         default:
                             var ms;

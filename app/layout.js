@@ -11,7 +11,7 @@ define(["require", "exports", 'angular', 'jquery', "angular-ui-router", "angular
         Layout.module = function () {
             if (this.ngModule != null)
                 return this.ngModule;
-            this.ngModule = angular.module('coffeeLayout', ['ui.router']);
+            this.ngModule = angular.module('coffeeLayout', ['ui.router', 'coffeeRest']);
             this.ngModule.config(['$stateProvider', '$locationProvider', function ($stateProvider, $locationProvider) {
                 $stateProvider.state('main', {
                     url: '/',
@@ -27,13 +27,94 @@ define(["require", "exports", 'angular', 'jquery', "angular-ui-router", "angular
                                 minWidth: 240
                             });
                             $element.find('> .scrollable').css({height: ($element.height() - 50)})*/
-            }]).controller('CoffeeHeaderCtrl', ['$scope', '$coffee', function ($scope, $coffee) {
+            }]).controller('CoffeeHeaderCtrl', ['$scope', '$coffee', '$user', function ($scope, $coffee, $user) {
                 $coffee.config.get({ section: 'meta' }, function (data) {
                     //angular.extend($scope, data);
                     $scope.siteTitle = data.siteTitle;
+                    $scope.user = $user;
+                    /* FIXME: Why? */
+                    $scope.$on('user:logout', function (ev) {
+                        $scope.user.unSet();
+                    });
                 });
+            }]).controller('LogoutCtrl', ['$scope', '$coffee', '$rootScope', function ($scope, $coffee, $rootScope) {
+                $scope.doLogout = function () {
+                    $coffee.authLogout('CoffeestudioAccessBundle:User').success(function (data) {
+                        if (data.type == 'value' && data.value == true) {
+                            $rootScope.$broadcast('user:logout', {});
+                        }
+                    });
+                };
+            }]).controller('AuthCtrl', ['$scope', '$coffee', '$user', '$rootScope', '$notify', function ($scope, $coffee, $user, $rootScope, $notify) {
+                $scope.login = null;
+                $scope.password = null;
+                $scope.doLogin = function () {
+                    $coffee.authLogin('CoffeestudioAccessBundle:User', $scope.login, $scope.password).success(function (data) {
+                        if (data.type == 'model' && data.model.length > 0) {
+                            var userdata = data.model[0];
+                            $user.set(userdata.id, userdata.username);
+                            $rootScope.$broadcast('user:login', $user);
+                            $notify.push('Успешный вход', true);
+                        }
+                        else {
+                            $notify.push('Ошибка авторизации', false);
+                        }
+                    });
+                };
             }]).controller('CoffeeMainContentCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
-            }]).factory('$notify', ['$rootScope', function ($rootScope) { return new Notificator($rootScope); }]).directive('coffeeFlash', function () {
+            }]).directive('restricted', ['$user', function ($user) {
+                return {
+                    restrict: 'A',
+                    transclude: true,
+                    link: function (scope, elem, attrs, ctrl, transclude) {
+                        var showUserBlocks = function () {
+                            transclude(scope, function (html) {
+                                elem.append(html);
+                            });
+                        };
+                        if ($user.isSet()) {
+                            showUserBlocks();
+                        }
+                        scope.$on('user:login', function (ev, user) {
+                            showUserBlocks();
+                        });
+                        scope.$on('user:logout', function (ev) {
+                            elem.empty();
+                        });
+                    }
+                };
+            }]).directive('nologin', ['$user', function ($user) {
+                return {
+                    restrict: 'A',
+                    transclude: true,
+                    link: function (scope, elem, attrs, ctrl, transclude) {
+                        var showUserBlocks = function () {
+                            transclude(scope, function (html) {
+                                elem.append(html);
+                            });
+                        };
+                        if ($user.notSet()) {
+                            showUserBlocks();
+                        }
+                        scope.$on('user:login', function () {
+                            elem.empty();
+                        });
+                        scope.$on('user:logout', function () {
+                            showUserBlocks();
+                        });
+                    }
+                };
+            }]).factory('$notify', ['$rootScope', function ($rootScope) { return new Notificator($rootScope); }]).factory('$user', ['$coffee', '$rootScope', function ($coffee, $rootScope) {
+                var $user = new User(0, null);
+                $coffee.auth.get({ name: 'CoffeestudioAccessBundle:User', method: 'check' }, function (data) {
+                    if (data.type == 'model' && data.model.length > 0) {
+                        var userdata = data.model[0];
+                        $user.set(userdata.id, userdata.username);
+                        $rootScope.$broadcast('user:login', $user);
+                    }
+                });
+                return $user;
+            }]).directive('coffeeFlash', function () {
                 return {
                     restrict: 'A',
                     transclude: true,
@@ -59,6 +140,26 @@ define(["require", "exports", 'angular', 'jquery', "angular-ui-router", "angular
         return Layout;
     })();
     var mod = Layout.module();
+    var User = (function () {
+        function User(id, username) {
+            this.set(id, username);
+        }
+        User.prototype.set = function (id, username) {
+            this.id = id;
+            this.username = username;
+        };
+        User.prototype.isSet = function () {
+            return this.id > 0;
+        };
+        User.prototype.notSet = function () {
+            return !this.isSet();
+        };
+        User.prototype.unSet = function () {
+            this.id = 0;
+            this.username = null;
+        };
+        return User;
+    })();
     var Notificator = (function () {
         function Notificator($rootScope) {
             this.messages = [];

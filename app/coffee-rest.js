@@ -27,7 +27,21 @@ define(["require", "exports", 'angular', "angular-resource"], function (require,
             });
             this.model = $resource('/coffee.api.model/:name/:method/:fieldset');
             this.util = $resource('/coffee.api.util/:name/:method');
+            this.auth = $resource('/coffee.api.auth/:name/:method');
         }
+        CoffeeRestService.prototype.authLogin = function (model, login, password) {
+            return this.$http({
+                method: 'POST',
+                url: '/coffee.api.auth/' + model + '/login',
+                data: { login: login, password: password },
+            });
+        };
+        CoffeeRestService.prototype.authLogout = function (model) {
+            return this.$http({
+                method: 'POST',
+                url: '/coffee.api.auth/' + model + '/logout',
+            });
+        };
         CoffeeRestService.prototype.edit = function (model, id, obj) {
             return this.$http({
                 method: 'POST',

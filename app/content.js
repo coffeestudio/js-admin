@@ -54,10 +54,12 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
             }).filter('parseJsUri', function () {
                 return function (input) {
                     var out = {};
-                    input.split(',').forEach(function (pair) {
-                        var p = pair.split(':');
-                        out[p[0]] = p[1];
-                    });
+                    if (typeof (input) == 'string') {
+                        input.split(',').forEach(function (pair) {
+                            var p = pair.split(':');
+                            out[p[0]] = p[1];
+                        });
+                    }
                     return out;
                 };
             }).controller('CoffeeModelContentCtrl', ['$scope', '$filter', '$stateParams', '$state', '$notify', '$coffee', function ($scope, $filter, $stateParams, $state, $notify, $coffee) {
@@ -188,6 +190,9 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                                 break;
                             case 'text':
                                 tpl = '<textarea ng-model="value" name="' + scope.name + '"></textarea>';
+                                break;
+                            case 'password':
+                                tpl = '<input ng-model="value" type="password" name="' + scope.name + '"/>';
                                 break;
                             default:
                                 var ms;

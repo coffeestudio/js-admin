@@ -14,11 +14,7 @@ class CoffeeRest {
 }
 
 class CoffeeRestService {
-    config;
-    model;
-    util;
-    lang;
-    $http;
+    config; model; util; lang; auth; $http;
     constructor($resource, $http) {
         this.$http = $http;
         this.config = $resource('/coffee.api.config/:section/:subsection/:param');
@@ -31,6 +27,22 @@ class CoffeeRestService {
         });
         this.model = $resource('/coffee.api.model/:name/:method/:fieldset');
         this.util = $resource('/coffee.api.util/:name/:method');
+        this.auth = $resource('/coffee.api.auth/:name/:method');
+    }
+
+    authLogin(model: string, login: string, password: string) {
+        return this.$http({
+            method: 'POST',
+            url: '/coffee.api.auth/'+model+'/login',
+            data: {login: login, password: password},
+        });
+    }
+
+    authLogout(model: string) {
+        return this.$http({
+            method: 'POST',
+            url: '/coffee.api.auth/'+model+'/logout',
+        });
     }
 
     edit(model: string, id: number, obj: any) {

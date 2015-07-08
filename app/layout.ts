@@ -12,7 +12,7 @@ class Layout {
     private static ngModule: angular.IModule = null;
     static module() {
         if (this.ngModule != null) return this.ngModule;
-        this.ngModule = angular.module('coffeeLayout', ['ui.router']);
+        this.ngModule = angular.module('coffeeLayout', ['ui.router', 'coffeeRest']);
         this.ngModule
         .config(['$stateProvider', '$locationProvider', function($stateProvider, $locationProvider) {
             $stateProvider
@@ -33,15 +33,100 @@ class Layout {
             });
             $element.find('> .scrollable').css({height: ($element.height() - 50)})*/
         }])
-        .controller('CoffeeHeaderCtrl', ['$scope', '$coffee', ($scope, $coffee) => {
+        .controller('CoffeeHeaderCtrl', ['$scope', '$coffee', '$user', ($scope, $coffee, $user) => {
             $coffee.config.get({section: 'meta'}, (data) => {
                 //angular.extend($scope, data);
                 $scope.siteTitle = data.siteTitle;
+                $scope.user = $user;
+                /* FIXME: Why? */
+                $scope.$on('user:logout', (ev) => {
+                    $scope.user.unSet();
+                });
             });
+        }])
+        .controller('LogoutCtrl', ['$scope', '$coffee', '$rootScope', ($scope, $coffee, $rootScope) => {
+            $scope.doLogout = () => {
+                $coffee.authLogout('CoffeestudioAccessBundle:User').success((data) => {
+                    if (data.type == 'value' && data.value == true) {
+                        $rootScope.$broadcast('user:logout', {});
+                    }
+                });
+            };
+        }])
+        .controller('AuthCtrl', ['$scope', '$coffee', '$user', '$rootScope', '$notify', ($scope, $coffee, $user, $rootScope, $notify) => {
+            $scope.login = null;
+            $scope.password = null;
+            $scope.doLogin = () => {
+                $coffee.authLogin('CoffeestudioAccessBundle:User', $scope.login, $scope.password).success((data) => {
+                    if (data.type == 'model' && data.model.length > 0) {
+                        var userdata = data.model[0];
+                        $user.set(userdata.id, userdata.username);
+                        $rootScope.$broadcast('user:login', $user);
+                        $notify.push('Успешный вход', true);
+                    } else {
+                        $notify.push('Ошибка авторизации', false);
+                    }
+                });
+            };
         }])
         .controller('CoffeeMainContentCtrl', ['$scope', '$stateParams', ($scope, $stateParams) => {
         }])
+        .directive('restricted', ['$user', ($user) => {
+            return {
+                restrict: 'A',
+                transclude: true,
+                link: (scope: any, elem, attrs, ctrl, transclude) => {
+                    var showUserBlocks = () => {
+                        transclude(scope, (html) => {
+                            elem.append(html);
+                        });
+                    }
+                    if ($user.isSet()) {
+                        showUserBlocks();
+                    }
+                    scope.$on('user:login', (ev, user) => {
+                        showUserBlocks();
+                    });
+                    scope.$on('user:logout', (ev) => {
+                        elem.empty();
+                    });
+                }
+            };
+        }])
+        .directive('nologin', ['$user', ($user) => {
+            return {
+                restrict: 'A',
+                transclude: true,
+                link: (scope: any, elem, attrs, ctrl, transclude) => {
+                    var showUserBlocks = () => {
+                        transclude(scope, (html) => {
+                            elem.append(html);
+                        });
+                    }
+                    if ($user.notSet()) {
+                        showUserBlocks();
+                    }
+                    scope.$on('user:login', () => {
+                        elem.empty();
+                    });
+                    scope.$on('user:logout', () => {
+                        showUserBlocks();
+                    });
+                }
+            };
+        }])
         .factory('$notify', ['$rootScope', ($rootScope) => new Notificator($rootScope)])
+        .factory('$user', ['$coffee', '$rootScope', ($coffee, $rootScope) => {
+                var $user = new User(0, null);
+                $coffee.auth.get({name: 'CoffeestudioAccessBundle:User', method: 'check'}, (data) => {
+                    if (data.type == 'model' && data.model.length > 0) {
+                        var userdata = data.model[0];
+                        $user.set(userdata.id, userdata.username);
+                        $rootScope.$broadcast('user:login', $user);
+                    }
+                });
+                return $user;
+        }])
         .directive('coffeeFlash', () => {
             return {
                 restrict: 'A',
@@ -69,6 +154,33 @@ class Layout {
 
 var mod = Layout.module();
 export = mod;
+
+class User {
+    id: number;
+    username: string;
+
+    constructor(id: number, username: string) {
+        this.set(id, username);
+    }
+
+    set(id: number, username: string) {
+        this.id = id;
+        this.username = username;
+    }
+
+    isSet() {
+        return this.id > 0;
+    }
+
+    notSet() {
+        return ! this.isSet();
+    }
+
+    unSet() {
+        this.id = 0;
+        this.username = null;
+    }
+}
 
 class Notificator {
     private messages: Array<NMessage>;
