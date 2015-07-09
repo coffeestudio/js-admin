@@ -1,4 +1,6 @@
-define(["require", "exports", 'widgets/filemanager/filemanager'], function (require, exports, fm) {
+/// <reference path="../widget.d.ts"/>
+/// <reference path="../../include/jquery.d.ts"/>
+define(["require", "exports", 'widgets/filemanager/filemanager'], function (require, exports, FileManager) {
     var AttachmentPanel = (function () {
         function AttachmentPanel($scope, $attrs, $http) {
             var _this = this;
@@ -22,6 +24,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.objId = isNaN($attrs.objId) ? 0 : $attrs.objId;
             this.token = $attrs.token;
             this.state = new State;
+            this.fm = new FileManager;
         }
         AttachmentPanel.prototype.init = function (data) {
             var _this = this;
@@ -35,7 +38,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
         };
         AttachmentPanel.prototype.attach = function ($event) {
             var _this = this;
-            fm.invoke($event.target, function (resId, path) {
+            this.fm.invoke($event.target, function (resId, path) {
                 var dataOut = { 'objModel': _this.objModel, 'objId': _this.objId, 'token': _this.token, 'resId': resId, 'path': path, 'sort': _this.maxsort + 7 };
                 $.post('/coffee.api.model/Attachment/add/id,type,path,name,comment,sort/', dataOut, function (data) {
                     if (data.type != 'model')
@@ -46,42 +49,42 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             });
         };
         AttachmentPanel.prototype.loadAttachments = function (callback) {
-            this.http({ method: 'GET', url: '/coffee.api.model/Attachment/getList/id,type,path,name,comment,sort', params: { model: this.objModel, id: this.objId } }).success(callback);
+            this.http({ method: 'GET', url: '/coffee.api.model/' + this.objModel + '/getAttachmentsById', params: { entityId: this.objId } }).success(callback);
         };
         return AttachmentPanel;
     })();
     var State = (function () {
         function State() {
             this.activeId = 0;
-            this.name = '';
+            this.title = '';
+            this.title0 = '';
             this.comment = '';
-            this.name0 = '';
             this.comment0 = '';
         }
         State.prototype.setState = function (item, $event) {
             $event.stopPropagation();
             this.activeItem = item;
             this.activeId = item.id;
-            this.name = item.name;
+            this.title = item.title;
+            this.title0 = item.title;
             this.comment = item.comment;
-            this.name0 = item.name;
             this.comment0 = item.comment;
         };
         State.prototype.edited = function () {
-            return this.name != this.name0 || this.comment != this.comment0;
+            return this.title != this.title0 || this.comment != this.comment0;
         };
         State.prototype.reset = function () {
             this.activeItem = null;
             this.activeId = 0;
-            this.name = '';
+            this.title = '';
             this.comment = '';
-            this.name0 = '';
+            this.title0 = '';
             this.comment0 = '';
         };
         State.prototype.save = function () {
-            this.activeItem.name = this.name;
+            this.activeItem.title = this.title;
             this.activeItem.comment = this.comment;
-            this.name0 = this.name;
+            this.title0 = this.title;
             this.comment0 = this.comment;
             this.activeItem.commit();
         };
@@ -91,7 +94,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
         function Attachment(model, panel) {
             if (panel === void 0) { panel = null; }
             this.type = 'image';
-            this.name = '';
+            this.title = '';
             this.comment = '';
             this.path = '';
             this.sort = 0;
@@ -108,7 +111,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.loadThumb();
         }
         Attachment.prototype.commit = function () {
-            $.post('/coffee.api.model/Attachment/edit/id,type,path,name,comment,sort/?id=' + this.id, { name: this.name, comment: this.comment });
+            $.post('/coffee.api.model/Attachment/edit/id,type,path,name,comment,sort/?id=' + this.id, { title: this.title, comment: this.comment });
         };
         Attachment.prototype.commitOrder = function () {
             $.post('/coffee.api.model/Attachment/edit/id,type,path,name,comment,sort/?id=' + this.id, { sort: this.sort });
@@ -131,7 +134,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             if (this.path == '' || !this.panel)
                 return;
             var settings = { src: this.path, size: '50x50', flags: 'FILL,CROP,PRIVATED', pos: '50% 50%' };
-            this.panel.http({ method: 'GET', url: '/coffee.api.util/Image/', params: settings }).success(function (data) {
+            this.panel.http({ method: 'GET', url: '/coffee.api.util/Image', params: settings }).success(function (data) {
                 _this.thumb = data.value.src;
             });
         };

@@ -108,6 +108,10 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
             }]).controller('CoffeeModelContentEditCtrl', ['$scope', '$notify', '$stateParams', '$coffee', function ($scope, $notify, $stateParams, $coffee) {
                 angular.extend($scope, $stateParams);
                 $scope.mode = 'Редактирование';
+                $scope.withAttachments = false;
+                $coffee.checkFeature($scope.name, 'IWithAttachments').then(function (answer) {
+                    $scope.withAttachments = answer;
+                });
                 $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
                     $scope.modelTitle = data.value;
                 });

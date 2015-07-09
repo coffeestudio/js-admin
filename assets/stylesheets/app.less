@@ -364,3 +364,206 @@ nav ul.section {
 *[ng-click] {
   cursor: pointer;
 }
+
+/* ---------- Legacy ---------- */
+
+.att-panel {
+  .contentframe;
+  background: #eeeeff;
+  padding: 10px;
+  h2 {
+    font-weight: 200;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  ul {
+    padding-left: 0;
+    list-style: none;
+    overflow: hidden;
+    li {
+      float: left;
+      margin: 5px;
+      .btn_del {
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        font-size: 18px;
+        color: darkred;
+        @h: 16px;
+        height: @h;
+        line-height: @h;
+        margin: 0;
+        padding: 3px 0;
+        background-color: #cccccc;
+        display: block;
+        float: none;
+      }
+    }
+  }
+}
+.att-panel.ko {
+  ul {
+    li {
+      .item {
+        box-sizing: content-box;
+        height: 50px;
+        line-height: 50px;
+        margin-bottom: 3px;
+        min-width: 50px;
+        border: 1px solid #000000;
+        img {
+          display: block;
+        }
+      }
+      .item.active {
+        border: 1px solid #ff0000;
+      }
+      cursor: pointer;
+    }
+  }
+}
+
+@frame-color: @odd-color;
+.contentframe () {
+  margin: 5px;
+  border: 1px solid #ccc;
+  background: @frame-color;
+  .shadow(-3px, 3px, 2px, 2px);
+}
+
+/* <mixins> */
+.shadow (@x: 0, @y: 0, @blur: 3px, @spread: 3px, @color: #dddddd) {
+  -moz-box-shadow: @arguments;
+  -webkit-box-shadow: @arguments;
+  box-shadow: @arguments;
+}
+.noshadow {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.sizing (@sizing) {
+  box-sizing: @sizing;
+  -moz-box-sizing: @sizing;
+  -webkit-box-sizing: @sizing;
+}
+.radius (@topleft: 0, @topright: 0, @bottomleft: 0, @bottomright: 0) {
+  -webkit-border-top-left-radius: @topleft; -khtml-border-radius-topleft: @topleft; -moz-border-radius-topleft: @topleft; border-top-left-radius: @topleft;
+  -webkit-border-top-right-radius: @topright; -khtml-border-radius-topright: @topright; -moz-border-radius-topright: @topright; border-top-right-radius: @topright;
+  -webkit-border-bottom-left-radius: @bottomleft; -khtml-border-radius-bottomleft: @bottomleft; -moz-border-radius-bottomleft: @bottomleft; border-bottom-left-radius: @bottomleft;
+  -webkit-border-bottom-right-radius: @bottomright; -khtml-border-radius-bottomright: @bottomright; -moz-border-radius-bottomright: @bottomright; border-bottom-right-radius: @bottomright;
+}
+.radius (@radius: 0) {
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
+  -khtml-border-radius: @radius;
+  border-radius: @radius;
+}
+/* </mixins> */
+
+#file-manager {
+  display: none;
+  position: absolute;
+  z-index: 1000;
+  width: 500px;
+  border: 1px solid #000000;
+}
+.filemanager {
+  padding: 10px;
+  background: #ddeeff;
+  a {
+    cursor: pointer;
+  }
+
+  .breadcrumbs {
+    padding-left: 5px;
+    margin-bottom: 10px;
+    list-style: none;
+    li, li:first-child {
+      margin: 0 5px;
+      font-size: 12px !important;
+    }
+    li.sep {
+      margin: 0;
+    }
+  }
+
+  ul.breadcrumbs {
+    margin-bottom: 10px;
+    font-size: 14px;
+    list-style: none;
+    li {
+      display: inline;
+      &:first-child {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .shadow;
+  .panel {
+    overflow: hidden;
+    list-style: none;
+    margin-bottom: 10px;
+    li {
+      float: left;
+      margin-left: 0;
+      margin-right: 15px;
+    }
+    li.right {
+      float: right;
+      margin-left: 15px;
+      margin-right: 0;
+    }
+  }
+  .statusbar {
+    height: 20px;
+    line-height: 20px;
+    margin: 5px 0;
+    padding: 0 5px;
+    background: #ffffff;
+    .radius(10px);
+  }
+  .listing {
+    width: 100%;
+    tr {
+      height: 20px;
+      line-height: 20px;
+    }
+    a {
+      display: inline-block;
+      max-width: 290px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    a.dir {
+      display: inline-block;
+      background: url(img/ui-icons/color_18/folder.png) 0 0 no-repeat;
+      padding-left: 27px;
+    }
+    a.file {
+      display: inline-block;
+      background: url(img/ui-icons/color_18/notepad.png) 0 0 no-repeat;
+      padding-left: 27px;
+    }
+    a.file.with-thumb {
+      padding-left: 9px;
+      background: none transparent;
+    }
+    img.thumb {
+      width: 18px;
+      height: 18px;
+      margin-bottom: -7px;
+      display: inline-block;
+    }
+  }
+  .prevbox {
+    position: absolute;
+    left: -252px;
+    top: 10px;
+    img {
+      border: 1px solid #000000;
+    }
+  }
+}

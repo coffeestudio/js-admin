@@ -118,6 +118,10 @@ class Content {
         .controller('CoffeeModelContentEditCtrl', ['$scope', '$notify', '$stateParams', '$coffee', ($scope, $notify, $stateParams, $coffee) => {
             angular.extend($scope, $stateParams);
             $scope.mode = 'Редактирование';
+            $scope.withAttachments = false;
+            $coffee.checkFeature($scope.name, 'IWithAttachments').then((answer) => {
+                $scope.withAttachments = answer;
+            });
             $coffee.lang.getValue({section: 'models', subsection: $scope.name}, (data) => {
                 $scope.modelTitle = data.value;
             });

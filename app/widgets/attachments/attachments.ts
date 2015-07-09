@@ -1,7 +1,7 @@
 /// <reference path="../widget.d.ts"/>
-/// <reference path="../../js/jquery.d.ts"/>
+/// <reference path="../../include/jquery.d.ts"/>
 
-import fm = require('widgets/filemanager/filemanager');
+import FileManager = require('widgets/filemanager/filemanager');
 
 class AttachmentPanel implements IWidget {
     objModel: string;
@@ -12,6 +12,7 @@ class AttachmentPanel implements IWidget {
     state: State;
     scope: any;
     http: any;
+    fm: FileManager;
     $inject: string[] = ['$scope', '$attrs', '$http'];
     sortable = {
         stop: (e, ui) => {
@@ -31,6 +32,7 @@ class AttachmentPanel implements IWidget {
         this.objId = isNaN($attrs.objId) ? 0 : $attrs.objId;
         this.token = $attrs.token;
         this.state = new State;
+        this.fm = new FileManager;
     }
 
     init(data: any) {
@@ -43,7 +45,7 @@ class AttachmentPanel implements IWidget {
     }
 
     attach($event) {
-        fm.invoke($event.target, (resId, path) => {
+        this.fm.invoke($event.target, (resId, path) => {
             var dataOut =
                 { 'objModel': this.objModel
                 , 'objId': this.objId
@@ -66,8 +68,8 @@ class AttachmentPanel implements IWidget {
     loadAttachments(callback: (data: any) => void) {
         this.http(
             { method: 'GET'
-            , url: '/coffee.api.model/Attachment/getList/id,type,path,name,comment,sort'
-            , params: {model: this.objModel, id: this.objId}
+            , url: '/coffee.api.model/' + this.objModel + '/getAttachmentsById'
+            , params: { entityId: this.objId }
             }
         ).success(callback);
     }
@@ -76,35 +78,35 @@ class AttachmentPanel implements IWidget {
 class State {
     activeItem: Attachment;
     activeId: number = 0;
-    name: string = '';
+    title: string = '';
+    title0: string = '';
     comment: string = '';
-    name0: string = '';
     comment0: string = '';
 
     setState(item: Attachment, $event) {
         $event.stopPropagation();
         this.activeItem = item;
         this.activeId = item.id;
-        this.name = item.name;
+        this.title = item.title;
+        this.title0 = item.title;
         this.comment = item.comment;
-        this.name0 = item.name;
         this.comment0 = item.comment;
     }
     edited() {
-        return this.name != this.name0 || this.comment != this.comment0;
+        return this.title != this.title0 || this.comment != this.comment0;
     }
     reset() {
         this.activeItem = null;
         this.activeId = 0;
-        this.name = '';
+        this.title = '';
         this.comment = '';
-        this.name0 = '';
+        this.title0 = '';
         this.comment0 = '';
     }
     save() {
-        this.activeItem.name = this.name;
+        this.activeItem.title = this.title;
         this.activeItem.comment = this.comment;
-        this.name0 = this.name;
+        this.title0 = this.title;
         this.comment0 = this.comment;
         this.activeItem.commit();
     }
@@ -113,7 +115,7 @@ class State {
 class Attachment {
     id: number;
     type: string = 'image';
-    name: string = '';
+    title: string = '';
     comment: string = '';
     path: string = '';
     sort: number = 0;
@@ -130,7 +132,7 @@ class Attachment {
     }
     commit() {
         $.post('/coffee.api.model/Attachment/edit/id,type,path,name,comment,sort/?id='+this.id
-            , {name: this.name, comment: this.comment}
+            , {title: this.title, comment: this.comment}
         );
     }
     commitOrder() {
@@ -163,7 +165,7 @@ class Attachment {
         };
         this.panel.http(
             { method: 'GET'
-            , url: '/coffee.api.util/Image/'
+            , url: '/coffee.api.util/Image'
             , params: settings
             }
         ).success((data) => { this.thumb = data.value.src });
