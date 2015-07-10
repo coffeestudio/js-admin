@@ -15,8 +15,8 @@ define(["require", "exports"], function (require, exports) {
         }
         Tree.prototype.init = function (data) {
             var _this = this;
-            this.loadTitle();
-            this.loadActive();
+            //this.loadTitle();
+            //this.loadActive();
             this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel').success(function (data) {
                 _this.topLevel = data.model.map(function (el) { return new Node(el, _this); });
             });
@@ -24,7 +24,12 @@ define(["require", "exports"], function (require, exports) {
         Tree.prototype.toggleNode = function (n) {
             var id = n.isActive() ? 0 : n.id;
             this.activeId = id;
-            this.rootScope.$broadcast('filter:update', { section: id });
+            if (id == 0) {
+                this.rootScope.$broadcast('filter:remove', ['section']);
+            }
+            else {
+                this.rootScope.$broadcast('filter:update', { section: id });
+            }
         };
         Tree.prototype.resetNode = function () {
             this.activeId = 0;

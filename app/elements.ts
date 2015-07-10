@@ -10,7 +10,7 @@ class Elements {
     private static ngModule: angular.IModule = null;
     static module() {
         if (this.ngModule != null) return this.ngModule;
-        this.ngModule = angular.module('coffeeElements', []);
+        this.ngModule = angular.module('coffeeElements', ['ui.router']);
         [sidenav].forEach(extend => extend(this.ngModule));
         return this.ngModule;
     }

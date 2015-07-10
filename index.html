@@ -13,9 +13,6 @@
 	<!--[if lt IE 9]>
 	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
-	<!-- Scripts -->
-	<!--<script src="js/uikit.min.js"></script>-->
-	<!--<script src="js/tooltip.min.js"></script>-->
 </head>
 <body>
 <header>
@@ -79,7 +76,7 @@
                 <div class="uk-nav-header" ng-bind="block.title"></div>
                 <ul class="root">
                     <li coffee-side-block-tree="node in block.children at ul" ng-class="{parent: node.children}">
-                        <a ui-sref="{{makeSref(node)}}">
+                        <a ng-class="{active: isActive(node)}" ui-sref="{{makeSref(node)}}">
                             <!--<i class="uk-icon-external-link"></i> <span ng-bind="node.title"></span>-->
 							<span ng-bind="node.title"></span>
                             <!--<span class="uk-badge">1</span>-->
@@ -90,7 +87,7 @@
                 </ul>
 			</section>
 		</coffee-side-nav>
-		<coffee-widget name="tree" flat="true" obj-model="CoffeestudioSectionBundle:Section" active-id="0"></coffee-widget>
+        <coffee-widget name="tree" flat="true" obj-model="CoffeestudioSectionBundle:Section" active-id="0"></coffee-widget>
 	</div>
 
 	<div class="sidefoot">

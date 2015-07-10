@@ -25,6 +25,7 @@ class Layout {
             $locationProvider.html5Mode(true);
         }])
         .controller('CoffeeSidebarCtrl', ['$scope', '$element', ($scope, $element) => {
+            //$scope.showSections = false;
             /* TODO: rewrite with angular-ui */
 /*            $element.resizable({
                 handles: 'e',

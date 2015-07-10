@@ -20,6 +20,7 @@ define(["require", "exports", 'angular', 'jquery', "angular-ui-router", "angular
                 });
                 $locationProvider.html5Mode(true);
             }]).controller('CoffeeSidebarCtrl', ['$scope', '$element', function ($scope, $element) {
+                //$scope.showSections = false;
                 /* TODO: rewrite with angular-ui */
                 /*            $element.resizable({
                                 handles: 'e',

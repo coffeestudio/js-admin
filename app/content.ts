@@ -78,6 +78,12 @@ class Content {
             $scope.$on('filter:update', (ev, patch) => {
                 $state.go('content-model', {id: $stateParams.id, filter: $filter('flatJsUri')(patch)});
             });
+            $scope.$on('filter:remove', (ev, toDel) => {
+                toDel.forEach((f) => {
+                    delete contentFilter[f];
+                });
+                $state.go('content-model', {id: $stateParams.id, filter: $filter('flatJsUri')(contentFilter)});
+            });
             $coffee.lang.getValue({section: 'models', subsection: $scope.name}, (data) => {
                 $scope.modelTitle = data.value;
             });

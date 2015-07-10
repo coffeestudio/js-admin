@@ -68,6 +68,12 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                 $scope.$on('filter:update', function (ev, patch) {
                     $state.go('content-model', { id: $stateParams.id, filter: $filter('flatJsUri')(patch) });
                 });
+                $scope.$on('filter:remove', function (ev, toDel) {
+                    toDel.forEach(function (f) {
+                        delete contentFilter[f];
+                    });
+                    $state.go('content-model', { id: $stateParams.id, filter: $filter('flatJsUri')(contentFilter) });
+                });
                 $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
                     $scope.modelTitle = data.value;
                 });

@@ -1,8 +1,16 @@
 define(["require", "exports"], function (require, exports) {
     /// <reference path="../include/angular.d.ts"/>
     var sidenav = function (m) {
-        m.controller('CoffeeSidebarCtrl', ['$scope', '$coffee', function ($scope, $coffee) {
+        m.controller('CoffeeSidebarCtrl', ['$scope', '$coffee', '$state', function ($scope, $coffee, $state) {
             $scope.blocks = $coffee.config.query({ section: 'admin', subsection: 'sideblocks' });
+            $scope.$on('$stateChangeSuccess', function (ev, toState, toParams) {
+                if (toState.name == 'content-model') {
+                    $scope.curModel = toParams.name;
+                }
+            });
+            $scope.isActive = function (node) {
+                return node.name == $scope.curModel;
+            };
             $scope.makeSref = function (node) {
                 if (typeof (node.type) == 'undefined' || typeof (node.name) == 'undefined')
                     return '';

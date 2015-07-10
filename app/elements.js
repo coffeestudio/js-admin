@@ -10,7 +10,7 @@ define(["require", "exports", 'angular', 'elements/sidenav', "angular-ui-sortabl
             var _this = this;
             if (this.ngModule != null)
                 return this.ngModule;
-            this.ngModule = angular.module('coffeeElements', []);
+            this.ngModule = angular.module('coffeeElements', ['ui.router']);
             [sidenav].forEach(function (extend) { return extend(_this.ngModule); });
             return this.ngModule;
         };

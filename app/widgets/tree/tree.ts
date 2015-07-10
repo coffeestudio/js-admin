@@ -26,8 +26,8 @@ class Tree implements IWidget {
     }
 
     init(data: any) {
-        this.loadTitle();
-        this.loadActive();
+        //this.loadTitle();
+        //this.loadActive();
         this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel').success(data => {
             this.topLevel = data.model.map(el => new Node(el, this));
         });
@@ -36,7 +36,11 @@ class Tree implements IWidget {
     toggleNode(n: Node) {
         var id = n.isActive() ? 0 : n.id;
         this.activeId = id;
-        this.rootScope.$broadcast('filter:update', {section: id});
+        if (id == 0) {
+            this.rootScope.$broadcast('filter:remove', ['section']);
+        } else {
+            this.rootScope.$broadcast('filter:update', {section: id});
+        }
     }
 
     resetNode() {
