@@ -3,10 +3,11 @@
   <span ng-if="w.state.activeId > 0" class="att-edit" ng-click="$event.stopPropagation()">
     <input placeholder="название" ng-model="w.state.title"/>
     <input placeholder="комментарий" ng-model="w.state.comment"/>
+    <label><input type="checkbox" ng-model="w.state.isMain"/>&nbsp;главное</label>
     <input type="button" ng-click="w.state.save()" ng-disabled="! w.state.edited()" value="Сохранить"/>
   </span>
   <ul ui-sortable="w.sortable" ng-model="w.attachments">
-    <li ng-repeat="att in w.attachments">
+    <li ng-repeat="att in w.attachments" ng-class="{main: att.isMain}">
       <div class="item" ng-class="{active: att.id == att.panel.state.activeId}" ng-click="att.panel.state.setState(att, $event)">
         <img ng-if="att.type == 'image'" src="{{att.thumb}}" width="50px" height="50px"/>
       </div>

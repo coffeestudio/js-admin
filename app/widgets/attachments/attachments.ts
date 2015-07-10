@@ -9,6 +9,7 @@ class AttachmentPanel implements IWidget {
     token: string;
     maxsort: number = 0;
     attachments: Array<Attachment> = [];
+    mainAtt: Attachment = null;
     state: State;
     scope: any;
     http: any;
@@ -76,6 +77,8 @@ class State {
     title0: string = '';
     comment: string = '';
     comment0: string = '';
+    isMain: boolean = false;
+    isMain0: boolean = false;
 
     setState(item: Attachment, $event) {
         $event.stopPropagation();
@@ -85,23 +88,32 @@ class State {
         this.title0 = item.title;
         this.comment = item.comment;
         this.comment0 = item.comment;
+        this.isMain = item.isMain;
+        this.isMain0 = item.isMain;
     }
     edited() {
-        return this.title != this.title0 || this.comment != this.comment0;
+        return this.title != this.title0 || this.comment != this.comment0 || this.isMain != this.isMain0;
     }
     reset() {
         this.activeItem = null;
         this.activeId = 0;
         this.title = '';
-        this.comment = '';
         this.title0 = '';
+        this.comment = '';
         this.comment0 = '';
+        this.isMain = false;
+        this.isMain0 = false;
     }
     save() {
         this.activeItem.title = this.title;
         this.activeItem.comment = this.comment;
+        this.activeItem.isMain = this.isMain;
+        if (this.isMain0 != this.isMain) {
+            this.activeItem.updateMain();
+        }
         this.title0 = this.title;
         this.comment0 = this.comment;
+        this.isMain0 = this.isMain;
         this.activeItem.commit();
     }
 }
@@ -113,6 +125,7 @@ class Attachment {
     comment: string = '';
     path: string = '';
     sort: number = 0;
+    isMain: boolean = false;
     panel: AttachmentPanel;
     thumb: string = '';
     constructor(model: Object, panel = null) {
@@ -121,18 +134,30 @@ class Attachment {
             else this[k] = model[k];
         }
         this.panel = panel;
+        if (this.isMain) this.panel.mainAtt = this;
         if (panel && panel.maxsort < this.sort) panel.maxsort = this.sort;
         this.loadThumb();
     }
     commit() {
-        $.post('/coffee.api.model/'+this.panel.objModel+'/editAttachment?entityId='+this.panel.objId+'&attId='+this.id
-            , {title: this.title, comment: this.comment}
+        this.panel.http.post('/coffee.api.model/'+this.panel.objModel+'/editAttachment?entityId='+this.panel.objId+'&attId='+this.id
+            , {title: this.title, comment: this.comment, isMain: this.isMain}
         );
     }
     commitOrder() {
-        $.post('/coffee.api.model/'+this.panel.objModel+'/editAttachment?entityId='+this.panel.objId+'&attId='+this.id
+        this.panel.http.post('/coffee.api.model/'+this.panel.objModel+'/editAttachment?entityId='+this.panel.objId+'&attId='+this.id
             , {sort: this.sort}
         );
+    }
+    updateMain() {
+        if (this.isMain) {
+            if (this.panel.mainAtt) {
+                this.panel.mainAtt.isMain = false;
+                this.panel.mainAtt.commit();
+            }
+            this.panel.mainAtt = this;
+        } else {
+            this.panel.mainAtt = null;
+        }
     }
     del() {
         if (! this.panel) return;

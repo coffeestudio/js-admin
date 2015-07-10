@@ -7,6 +7,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.objId = 0;
             this.maxsort = 0;
             this.attachments = [];
+            this.mainAtt = null;
             this.$inject = ['$scope', '$attrs', '$http'];
             this.sortable = {
                 stop: function (e, ui) {
@@ -61,6 +62,8 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.title0 = '';
             this.comment = '';
             this.comment0 = '';
+            this.isMain = false;
+            this.isMain0 = false;
         }
         State.prototype.setState = function (item, $event) {
             $event.stopPropagation();
@@ -70,23 +73,32 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.title0 = item.title;
             this.comment = item.comment;
             this.comment0 = item.comment;
+            this.isMain = item.isMain;
+            this.isMain0 = item.isMain;
         };
         State.prototype.edited = function () {
-            return this.title != this.title0 || this.comment != this.comment0;
+            return this.title != this.title0 || this.comment != this.comment0 || this.isMain != this.isMain0;
         };
         State.prototype.reset = function () {
             this.activeItem = null;
             this.activeId = 0;
             this.title = '';
-            this.comment = '';
             this.title0 = '';
+            this.comment = '';
             this.comment0 = '';
+            this.isMain = false;
+            this.isMain0 = false;
         };
         State.prototype.save = function () {
             this.activeItem.title = this.title;
             this.activeItem.comment = this.comment;
+            this.activeItem.isMain = this.isMain;
+            if (this.isMain0 != this.isMain) {
+                this.activeItem.updateMain();
+            }
             this.title0 = this.title;
             this.comment0 = this.comment;
+            this.isMain0 = this.isMain;
             this.activeItem.commit();
         };
         return State;
@@ -99,6 +111,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.comment = '';
             this.path = '';
             this.sort = 0;
+            this.isMain = false;
             this.thumb = '';
             for (var k in model) {
                 if (k == 'path')
@@ -107,15 +120,29 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
                     this[k] = model[k];
             }
             this.panel = panel;
+            if (this.isMain)
+                this.panel.mainAtt = this;
             if (panel && panel.maxsort < this.sort)
                 panel.maxsort = this.sort;
             this.loadThumb();
         }
         Attachment.prototype.commit = function () {
-            $.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { title: this.title, comment: this.comment });
+            this.panel.http.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { title: this.title, comment: this.comment, isMain: this.isMain });
         };
         Attachment.prototype.commitOrder = function () {
-            $.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { sort: this.sort });
+            this.panel.http.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { sort: this.sort });
+        };
+        Attachment.prototype.updateMain = function () {
+            if (this.isMain) {
+                if (this.panel.mainAtt) {
+                    this.panel.mainAtt.isMain = false;
+                    this.panel.mainAtt.commit();
+                }
+                this.panel.mainAtt = this;
+            }
+            else {
+                this.panel.mainAtt = null;
+            }
         };
         Attachment.prototype.del = function () {
             var _this = this;
