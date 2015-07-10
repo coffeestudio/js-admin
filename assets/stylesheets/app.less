@@ -2,6 +2,11 @@
 @import '../../app/components/jquery-ui/themes/base/jquery-ui.min.css';
 @import '../../app/components/fontawesome/css/font-awesome.min.css';
 
+
+ul {
+  padding-left: 0;
+}
+
 /*==============================
 HEADER
 ==============================*/
@@ -349,6 +354,7 @@ form.object-edit {
 }
 
 nav ul.section {
+  padding-left: 30px;
   li.active {
     a {
       color: #000000;
@@ -554,7 +560,7 @@ nav ul.section {
     img.thumb {
       width: 18px;
       height: 18px;
-      margin-bottom: -7px;
+      margin-top: -7px;
       display: inline-block;
     }
   }
@@ -566,4 +572,54 @@ nav ul.section {
       border: 1px solid #000000;
     }
   }
+}
+
+/* ---------- buttons ---------- */
+a.btn_add { .cicon(add); }
+a.btn_trash_can { .cicon(trash_can); }
+a.btn_pencil { .cicon(pencil); }
+a.btn_up { .cicon(arrow_up2); }
+a.btn_close { .cicon(close); }
+a.btn_upload {
+  margin: 0 5px;
+  padding: 0;
+  border: 0;
+  display: inline-block;
+  height: 18px;
+  width: 100px; // FIXME
+}
+a.btn_del { .gicon(cross); }
+
+
+.cicon (@name) {
+  .cicon_(@name);
+  &:hover, &:active {
+    .cicon_(@name);
+  }
+}
+.cicon_ (@name) {
+  margin: 0 5px;
+  padding: 0;
+  border: 0;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: url(img/ui-icons/color_18/@{name}.png) 50% 50% no-repeat;
+}
+
+// FIXME: it's a dumb copy, not elegant at all
+.gicon (@name) {
+  .gicon_(@name);
+  &:hover, &:active {
+    .gicon_(@name);
+  }
+}
+.gicon_ (@name) {
+  margin: 0 5px;
+  padding: 0;
+  border: 0;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: url(img/ui-icons/gray_18/@{name}.png) 50% 50% no-repeat;
 }

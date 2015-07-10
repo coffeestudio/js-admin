@@ -46,15 +46,9 @@ class AttachmentPanel implements IWidget {
 
     attach($event) {
         this.fm.invoke($event.target, (resId, path) => {
-            var dataOut =
-                { 'objModel': this.objModel
-                , 'objId': this.objId
-                , 'token': this.token
-                , 'resId': resId
-                , 'path': path
-                , 'sort': this.maxsort + 7
-                }
-            $.post('/coffee.api.model/Attachment/add/id,type,path,name,comment,sort/'
+            //, 'resId': resId
+            var dataOut = { 'path': path , 'sort': this.maxsort + 7 };
+            $.post('/coffee.api.model/' + this.objModel + '/addAttachment?entityId=' + this.objId
                 , dataOut
                 , data => {
                     if (data.type != 'model') return;
@@ -131,12 +125,12 @@ class Attachment {
         this.loadThumb();
     }
     commit() {
-        $.post('/coffee.api.model/Attachment/edit/id,type,path,name,comment,sort/?id='+this.id
+        $.post('/coffee.api.model/'+this.panel.objModel+'/editAttachment?entityId='+this.panel.objId+'&attId='+this.id
             , {title: this.title, comment: this.comment}
         );
     }
     commitOrder() {
-        $.post('/coffee.api.model/Attachment/edit/id,type,path,name,comment,sort/?id='+this.id
+        $.post('/coffee.api.model/'+this.panel.objModel+'/editAttachment?entityId='+this.panel.objId+'&attId='+this.id
             , {sort: this.sort}
         );
     }
@@ -144,13 +138,9 @@ class Attachment {
         if (! this.panel) return;
         var i = this.panel.attachments.indexOf(this);
         if (i < 0) return;
-        this.panel.http(
-            { method: 'POST'
-            , url: '/coffee.api.model/Attachment/del/'
-            , data: {id: this.id}
-            }
-        ).success(data => {
-            if (data.type == 'value' && data.value == true) {
+        this.panel.http.post('/coffee.api.model/'+this.panel.objModel+'/delAttachment?entityId='+this.panel.objId+'&attId='+this.id)
+        .success(data => {
+            if (data.type == 'model') {
                 this.panel.attachments.splice(i, 1);
             }
         });

@@ -39,8 +39,9 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
         AttachmentPanel.prototype.attach = function ($event) {
             var _this = this;
             this.fm.invoke($event.target, function (resId, path) {
-                var dataOut = { 'objModel': _this.objModel, 'objId': _this.objId, 'token': _this.token, 'resId': resId, 'path': path, 'sort': _this.maxsort + 7 };
-                $.post('/coffee.api.model/Attachment/add/id,type,path,name,comment,sort/', dataOut, function (data) {
+                //, 'resId': resId
+                var dataOut = { 'path': path, 'sort': _this.maxsort + 7 };
+                $.post('/coffee.api.model/' + _this.objModel + '/addAttachment?entityId=' + _this.objId, dataOut, function (data) {
                     if (data.type != 'model')
                         return;
                     data.model.forEach(function (att) { return _this.attachments.push(new Attachment(att, _this)); });
@@ -111,10 +112,10 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.loadThumb();
         }
         Attachment.prototype.commit = function () {
-            $.post('/coffee.api.model/Attachment/edit/id,type,path,name,comment,sort/?id=' + this.id, { title: this.title, comment: this.comment });
+            $.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { title: this.title, comment: this.comment });
         };
         Attachment.prototype.commitOrder = function () {
-            $.post('/coffee.api.model/Attachment/edit/id,type,path,name,comment,sort/?id=' + this.id, { sort: this.sort });
+            $.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { sort: this.sort });
         };
         Attachment.prototype.del = function () {
             var _this = this;
@@ -123,8 +124,8 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             var i = this.panel.attachments.indexOf(this);
             if (i < 0)
                 return;
-            this.panel.http({ method: 'POST', url: '/coffee.api.model/Attachment/del/', data: { id: this.id } }).success(function (data) {
-                if (data.type == 'value' && data.value == true) {
+            this.panel.http.post('/coffee.api.model/' + this.panel.objModel + '/delAttachment?entityId=' + this.panel.objId + '&attId=' + this.id).success(function (data) {
+                if (data.type == 'model') {
                     _this.panel.attachments.splice(i, 1);
                 }
             });

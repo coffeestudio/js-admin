@@ -22,6 +22,8 @@ $.fn.extend({
             //inp.change(function () { $(this.form).submit(); });
             newfrm.append(inp);
 
+            //newfrm.width(btn.get(0).clientWidth);
+            //newfrm.height(btn.get(0).clientHeight);
             newfrm.width(btn.width());
             newfrm.height(btn.height());
             newfrm.hide(0);

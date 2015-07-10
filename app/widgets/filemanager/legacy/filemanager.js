@@ -15,15 +15,15 @@ define(["require", "exports", 'jquery', "./upload-widget"], function (require, e
         this.cwd = '/res';
         // TODO: add button function
         var li = $('<li/>');
-        var btn_up = $('<a/>');
-        btn_up.addClass('btn_up');
-        btn_up.click(function (ev) {
-            ev.preventDefault();
-            that.up();
-        });
-        this.panel.append(li.append(btn_up));
+        /*    var btn_up = $('<a/>');
+            btn_up.addClass('btn_up');
+            btn_up.click(function (ev) {
+                ev.preventDefault();
+                that.up();
+            });
+            this.panel.append(li.append(btn_up));*/
         li = $('<li/>');
-        var btn_upload = $('<a/>');
+        var btn_upload = $('<a class="fa fa-upload"> загрузить</a>');
         btn_upload.addClass('btn_upload');
         this.panel.append(li.append(btn_upload));
         btn_upload.uploadWidget({ action: this.getAjaxUrl('upload'), callback: function (data) {

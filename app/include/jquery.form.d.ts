@@ -4,7 +4,7 @@
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 
-/// <reference path="../jquery/jquery.d.ts"/>
+/// <reference path="jquery.d.ts"/>
 
 interface JQueryFormOptions extends JQueryAjaxSettings {
     beforeSerialize?: ($form: JQuery, options: JQueryFormOptions) => boolean;
