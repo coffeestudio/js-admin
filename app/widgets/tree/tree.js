@@ -1,8 +1,10 @@
 /// <reference path="../widget.d.ts"/>
-define(["require", "exports"], function (require, exports) {
+/// <reference path="../../include/angular.d.ts"/>
+define(["require", "exports", 'angular'], function (require, exports, angular) {
     var Tree = (function () {
-        function Tree($scope, $rootScope, $attrs, $http) {
-            this.$inject = ['$scope', '$rootScope', '$attrs', '$http'];
+        function Tree($scope, $rootScope, $attrs, $http, $state, $coffee, $notify) {
+            var _this = this;
+            this.$inject = ['$scope', '$rootScope', '$attrs', '$http', '$state', '$coffee', '$notify'];
             this.scope = $scope;
             this.rootScope = $rootScope;
             this.http = $http;
@@ -12,13 +14,40 @@ define(["require", "exports"], function (require, exports) {
             this.contentModel = $attrs.contentModel ? $attrs.contentModel : this.objModel;
             this.activeId = $attrs.activeId;
             this.flat = $attrs.flat == 'true' ? true : false;
+            $scope.makeEditSref = function (node) {
+                if (typeof (node.id) == 'undefined')
+                    return '';
+                var params = angular.toJson({ name: _this.objModel, id: node.id });
+                return 'content-model.edit(' + params + ')';
+            };
+            $scope.goAddSection = function () {
+                $state.go('content-model.add', { name: _this.objModel });
+            };
+            $scope.delete = function (node) {
+                if (confirm('Подтвердите удаление раздела "' + node.title + '"')) {
+                    $coffee.delete(_this.objModel, node.id).success(function (data) {
+                        if (data.type == 'model') {
+                            if (node.parent) {
+                                node.parent.children.splice(node.index, 1);
+                            }
+                            else {
+                                node.tree.topLevel.splice(node.index, 1);
+                            }
+                            $notify.push('Удалено', true);
+                        }
+                        else {
+                            $notify.push('Ошибка', false);
+                        }
+                    });
+                }
+            };
         }
         Tree.prototype.init = function (data) {
             var _this = this;
             //this.loadTitle();
             //this.loadActive();
             this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel').success(function (data) {
-                _this.topLevel = data.model.map(function (el) { return new Node(el, _this); });
+                _this.topLevel = data.model.map(function (el, index) { return new Node(el, _this, index); });
             });
         };
         Tree.prototype.toggleNode = function (n) {
@@ -51,12 +80,16 @@ define(["require", "exports"], function (require, exports) {
         return Tree;
     })();
     var Node = (function () {
-        function Node(model, tree, level) {
+        function Node(model, tree, index, parent, level) {
             var _this = this;
+            if (index === void 0) { index = null; }
+            if (parent === void 0) { parent = null; }
             if (level === void 0) { level = 0; }
+            this.index = null;
             this.childrenVisible = false;
             this.childrenLoaded = false;
             this.id = model.id;
+            this.index = index;
             this.title = model.title;
             this.path = model.path;
             this.fullpath = model.fullpath;
@@ -107,7 +140,7 @@ define(["require", "exports"], function (require, exports) {
             var _this = this;
             this.tree.http({ method: 'GET', url: '/coffee.api.model/' + this.tree.objModel + '/getChildrenOf/', params: { id: this.id } }).success(function (data) {
                 _this.childrenLoaded = true;
-                _this.children = data.model.map(function (el) { return new Node(el, _this.tree, _this.level + 1); });
+                _this.children = data.model.map(function (el, index) { return new Node(el, _this.tree, index, _this, _this.level + 1); });
             });
         };
         return Node;

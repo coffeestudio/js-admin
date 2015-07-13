@@ -1,4 +1,7 @@
 /// <reference path="../widget.d.ts"/>
+/// <reference path="../../include/angular.d.ts"/>
+
+import angular = require('angular');
 
 class Tree implements IWidget {
     objModel: string;
@@ -11,9 +14,9 @@ class Tree implements IWidget {
     http: any;
     topLevel: Array<Node>;
     activeNode: Node;
-    $inject: string[] = ['$scope', '$rootScope', '$attrs', '$http'];
+    $inject: string[] = ['$scope', '$rootScope', '$attrs', '$http', '$state', '$coffee', '$notify'];
 
-    constructor($scope, $rootScope, $attrs, $http) {
+    constructor($scope, $rootScope, $attrs, $http, $state, $coffee, $notify) {
         this.scope = $scope;
         this.rootScope = $rootScope;
         this.http = $http;
@@ -23,13 +26,38 @@ class Tree implements IWidget {
         this.contentModel = $attrs.contentModel ? $attrs.contentModel : this.objModel;
         this.activeId = $attrs.activeId;
         this.flat = $attrs.flat == 'true' ? true : false;
+
+        $scope.makeEditSref = (node) => {
+            if (typeof(node.id) == 'undefined') return '';
+            var params = angular.toJson({name: this.objModel, id: node.id});
+            return 'content-model.edit(' + params + ')';
+        }
+        $scope.goAddSection = () => {
+            $state.go('content-model.add', {name: this.objModel});
+        }
+        $scope.delete = (node: Node) => {
+            if (confirm('Подтвердите удаление раздела "' + node.title + '"')) {
+                $coffee.delete(this.objModel, node.id).success((data) => {
+                    if (data.type == 'model') {
+                        if (node.parent) {
+                            node.parent.children.splice(node.index, 1);
+                        } else {
+                            node.tree.topLevel.splice(node.index, 1);
+                        }
+                        $notify.push('Удалено', true);
+                    } else {
+                        $notify.push('Ошибка', false);
+                    }
+                });
+            }
+        }
     }
 
     init(data: any) {
         //this.loadTitle();
         //this.loadActive();
         this.http.get('/coffee.api.model/' + this.objModel + '/getTopLevel').success(data => {
-            this.topLevel = data.model.map(el => new Node(el, this));
+            this.topLevel = data.model.map((el, index) => new Node(el, this, index));
         });
     }
 
@@ -72,6 +100,7 @@ class Tree implements IWidget {
 
 class Node {
     id: number;
+    index: number = null;
     title: string;
     path: string;
     fullpath: string;
@@ -80,12 +109,14 @@ class Node {
     mark: string;
     level: number;
     tree: Tree;
+    parent: Node;
     children: Array<Node>;
     childrenVisible: boolean = false;
     private childrenLoaded: boolean = false;
 
-    constructor(model: any, tree: Tree, level: number = 0) {
+    constructor(model: any, tree: Tree, index: number = null, parent: Node = null, level: number = 0) {
         this.id = model.id;
+        this.index = index;
         this.title = model.title;
         this.path = model.path;
         this.fullpath = model.fullpath;
@@ -133,7 +164,7 @@ class Node {
             }
         ).success(data => {
             this.childrenLoaded = true;
-            this.children = data.model.map(el => new Node(el, this.tree, this.level + 1));
+            this.children = data.model.map((el, index) => new Node(el, this.tree, index, this, this.level + 1));
         });
     }
 }
