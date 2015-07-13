@@ -24,8 +24,15 @@ class Layout {
 
             $locationProvider.html5Mode(true);
         }])
-        .controller('CoffeeSidebarCtrl', ['$scope', '$element', ($scope, $element) => {
-            //$scope.showSections = false;
+        .controller('CoffeeSidebarCtrl', ['$scope', '$rootScope', '$coffee', '$element', '$stateParams',
+                                         ($scope, $rootScope, $coffee, $element, $stateParams) => {
+            $scope.showSections = false;
+            $rootScope.$on('$stateChangeSuccess', (ev, toState, toParams) => {
+                if (toState.name.indexOf('content-model') != 0) return;
+                $coffee.checkFeature($stateParams.name, 'IAdminSectionedView').then((answer) => {
+                    $scope.showSections = answer;
+                });
+            });
             /* TODO: rewrite with angular-ui */
 /*            $element.resizable({
                 handles: 'e',
@@ -76,6 +83,7 @@ class Layout {
             return {
                 restrict: 'A',
                 transclude: true,
+                priority: 600,
                 link: (scope: any, elem, attrs, ctrl, transclude) => {
                     var showUserBlocks = () => {
                         transclude(scope, (html) => {
@@ -98,6 +106,7 @@ class Layout {
             return {
                 restrict: 'A',
                 transclude: true,
+                priority: 600,
                 link: (scope: any, elem, attrs, ctrl, transclude) => {
                     var showUserBlocks = () => {
                         transclude(scope, (html) => {

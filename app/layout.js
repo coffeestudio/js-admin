@@ -19,8 +19,15 @@ define(["require", "exports", 'angular', 'jquery', "angular-ui-router", "angular
                     controller: 'CoffeeMainContentCtrl'
                 });
                 $locationProvider.html5Mode(true);
-            }]).controller('CoffeeSidebarCtrl', ['$scope', '$element', function ($scope, $element) {
-                //$scope.showSections = false;
+            }]).controller('CoffeeSidebarCtrl', ['$scope', '$rootScope', '$coffee', '$element', '$stateParams', function ($scope, $rootScope, $coffee, $element, $stateParams) {
+                $scope.showSections = false;
+                $rootScope.$on('$stateChangeSuccess', function (ev, toState, toParams) {
+                    if (toState.name.indexOf('content-model') != 0)
+                        return;
+                    $coffee.checkFeature($stateParams.name, 'IAdminSectionedView').then(function (answer) {
+                        $scope.showSections = answer;
+                    });
+                });
                 /* TODO: rewrite with angular-ui */
                 /*            $element.resizable({
                                 handles: 'e',
@@ -67,6 +74,7 @@ define(["require", "exports", 'angular', 'jquery', "angular-ui-router", "angular
                 return {
                     restrict: 'A',
                     transclude: true,
+                    priority: 600,
                     link: function (scope, elem, attrs, ctrl, transclude) {
                         var showUserBlocks = function () {
                             transclude(scope, function (html) {
@@ -88,6 +96,7 @@ define(["require", "exports", 'angular', 'jquery', "angular-ui-router", "angular
                 return {
                     restrict: 'A',
                     transclude: true,
+                    priority: 600,
                     link: function (scope, elem, attrs, ctrl, transclude) {
                         var showUserBlocks = function () {
                             transclude(scope, function (html) {

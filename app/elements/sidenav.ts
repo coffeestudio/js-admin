@@ -1,27 +1,27 @@
 /// <reference path="../include/angular.d.ts"/>
 var sidenav = (m: angular.IModule) => { m
-    .controller('CoffeeSidebarCtrl', ['$scope', '$coffee', '$state', ($scope, $coffee, $state) => {
-        $scope.blocks = $coffee.config.query({section: 'admin', subsection: 'sideblocks'});
-        $scope.$on('$stateChangeSuccess', (ev, toState, toParams) => {
-            if (toState.name == 'content-model') {
-                $scope.curModel = toParams.name;
-            }
-        });
-        $scope.isActive = (node) => {
-            return node.name == $scope.curModel;
-        }
-        $scope.makeSref = (node) => {
-            if (typeof(node.type) == 'undefined' || typeof(node.name) == 'undefined') return '';
-            var params = angular.toJson({name: node.name});
-            return 'content-' + node.type + '(' + params + ')';
-        }
-    }])
     .directive('coffeeSideNav', () => {
         return {
             restrict: 'E'
             , replace: true
             , scope: true
             , transclude: true
+            , controller: ['$scope', '$coffee', '$state', ($scope, $coffee, $state) => {
+                $scope.blocks = $coffee.config.query({section: 'admin', subsection: 'sideblocks'});
+                $scope.$on('$stateChangeSuccess', (ev, toState, toParams) => {
+                    if (toState.name == 'content-model') {
+                        $scope.curModel = toParams.name;
+                    }
+                });
+                $scope.isActive = (node) => {
+                    return node.name == $scope.curModel;
+                }
+                $scope.makeSref = (node) => {
+                    if (typeof(node.type) == 'undefined' || typeof(node.name) == 'undefined') return '';
+                    var params = angular.toJson({name: node.name});
+                    return 'content-' + node.type + '(' + params + ')';
+                }
+            }]
             , link: (scope: any, elem, attr, ctrl, transclude) => {
                 transclude(scope, template => {
                     elem.append(template);

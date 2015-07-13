@@ -1,28 +1,29 @@
 define(["require", "exports"], function (require, exports) {
     /// <reference path="../include/angular.d.ts"/>
     var sidenav = function (m) {
-        m.controller('CoffeeSidebarCtrl', ['$scope', '$coffee', '$state', function ($scope, $coffee, $state) {
-            $scope.blocks = $coffee.config.query({ section: 'admin', subsection: 'sideblocks' });
-            $scope.$on('$stateChangeSuccess', function (ev, toState, toParams) {
-                if (toState.name == 'content-model') {
-                    $scope.curModel = toParams.name;
-                }
-            });
-            $scope.isActive = function (node) {
-                return node.name == $scope.curModel;
-            };
-            $scope.makeSref = function (node) {
-                if (typeof (node.type) == 'undefined' || typeof (node.name) == 'undefined')
-                    return '';
-                var params = angular.toJson({ name: node.name });
-                return 'content-' + node.type + '(' + params + ')';
-            };
-        }]).directive('coffeeSideNav', function () {
+        m.directive('coffeeSideNav', function () {
             return {
                 restrict: 'E',
                 replace: true,
                 scope: true,
                 transclude: true,
+                controller: ['$scope', '$coffee', '$state', function ($scope, $coffee, $state) {
+                    $scope.blocks = $coffee.config.query({ section: 'admin', subsection: 'sideblocks' });
+                    $scope.$on('$stateChangeSuccess', function (ev, toState, toParams) {
+                        if (toState.name == 'content-model') {
+                            $scope.curModel = toParams.name;
+                        }
+                    });
+                    $scope.isActive = function (node) {
+                        return node.name == $scope.curModel;
+                    };
+                    $scope.makeSref = function (node) {
+                        if (typeof (node.type) == 'undefined' || typeof (node.name) == 'undefined')
+                            return '';
+                        var params = angular.toJson({ name: node.name });
+                        return 'content-' + node.type + '(' + params + ')';
+                    };
+                }],
                 link: function (scope, elem, attr, ctrl, transclude) {
                     transclude(scope, function (template) {
                         elem.append(template);
