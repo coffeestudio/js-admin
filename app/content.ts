@@ -156,13 +156,33 @@ class Content {
             };
         }])
         /* Add */
-        .controller('CoffeeModelContentAddCtrl', ['$scope', '$notify', '$state', '$stateParams', '$coffee', ($scope, $notify, $state, $stateParams, $coffee) => {
+        .controller('CoffeeModelContentAddCtrl', ['$scope', '$notify', '$filter', '$state', '$stateParams', '$coffee',
+                                                 ($scope, $notify, $filter, $state, $stateParams, $coffee) => {
             angular.extend($scope, $stateParams);
+            var contentFilter = $filter('parseJsUri')($scope.filter);
+            $scope.$on('filter:update', (ev, patch) => {
+                $state.go('content-model.add', {filter: $filter('flatJsUri')(patch)});
+            });
+            $scope.$on('filter:remove', (ev, toDel) => {
+                toDel.forEach((f) => {
+                    delete contentFilter[f];
+                });
+                $state.go('content-model.add', {filter: $filter('flatJsUri')(contentFilter)});
+            });
             $scope.mode = 'Добавление';
             $coffee.lang.getValue({section: 'models', subsection: $scope.name}, (data) => {
                 $scope.modelTitle = data.value;
             });
-            $coffee.model.get({name: $scope.name, method: 'schema', fieldset: '@editView'}, (data) => {
+
+            var getParams = {
+                name: $scope.name,
+                method: 'schema',
+                fieldset: '@editView'
+            };
+            if ('section' in contentFilter) {
+                getParams['section'] = contentFilter['section'];
+            }
+            $coffee.model.get(getParams, (data) => {
                 if (data.model.length > 0) {
                     $scope.object = data.model[0];
                     $scope.types = data.types;

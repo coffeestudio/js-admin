@@ -146,13 +146,31 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                         }
                     });
                 };
-            }]).controller('CoffeeModelContentAddCtrl', ['$scope', '$notify', '$state', '$stateParams', '$coffee', function ($scope, $notify, $state, $stateParams, $coffee) {
+            }]).controller('CoffeeModelContentAddCtrl', ['$scope', '$notify', '$filter', '$state', '$stateParams', '$coffee', function ($scope, $notify, $filter, $state, $stateParams, $coffee) {
                 angular.extend($scope, $stateParams);
+                var contentFilter = $filter('parseJsUri')($scope.filter);
+                $scope.$on('filter:update', function (ev, patch) {
+                    $state.go('content-model.add', { filter: $filter('flatJsUri')(patch) });
+                });
+                $scope.$on('filter:remove', function (ev, toDel) {
+                    toDel.forEach(function (f) {
+                        delete contentFilter[f];
+                    });
+                    $state.go('content-model.add', { filter: $filter('flatJsUri')(contentFilter) });
+                });
                 $scope.mode = 'Добавление';
                 $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
                     $scope.modelTitle = data.value;
                 });
-                $coffee.model.get({ name: $scope.name, method: 'schema', fieldset: '@editView' }, function (data) {
+                var getParams = {
+                    name: $scope.name,
+                    method: 'schema',
+                    fieldset: '@editView'
+                };
+                if ('section' in contentFilter) {
+                    getParams['section'] = contentFilter['section'];
+                }
+                $coffee.model.get(getParams, function (data) {
                     if (data.model.length > 0) {
                         $scope.object = data.model[0];
                         $scope.types = data.types;
