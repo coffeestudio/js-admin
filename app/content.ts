@@ -110,14 +110,16 @@ class Content {
                 return 'content-model.edit('+params+')';
             }
             $scope.delete = (rowId) => {
-                $coffee.delete($scope.name, $scope.rows[rowId].id).success((data) => {
-                    if (data.type == 'model') {
-                        $scope.rows.splice(rowId, 1);
-                        $notify.push('Удалено', true);
-                    } else {
-                        $notify.push('Ошибка', false);
-                    }
-                });
+                if (confirm('Подтвердите удаление №'+rowId+' '+$scope.rows[rowId].title)) {
+                    $coffee.delete($scope.name, $scope.rows[rowId].id).success((data) => {
+                        if (data.type == 'model') {
+                            $scope.rows.splice(rowId, 1);
+                            $notify.push('Удалено', true);
+                        } else {
+                            $notify.push('Ошибка', false);
+                        }
+                    });
+                }
             }
         }])
         /* Edit */
