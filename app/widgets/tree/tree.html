@@ -1,6 +1,6 @@
 <script id="{{tplId}}" type="text/ng-template">
     <span class="leaf" ng-if="node.leaf"></span>
-    <a class="fa fa-plus" ng-class="{plus: ! node.childrenVisible, minus: node.childrenVisible}" ng-click="node.toggleSubtree()" ng-if="! node.leaf"></a>
+    <a class="fa" ng-class="{'fa-plus': ! node.childrenVisible, 'fa-minus': node.childrenVisible}" ng-click="node.toggleSubtree()" ng-if="! node.leaf"></a>
     <a class="dyn" ng-click="w.toggleNode(node)">{{node.title}}</a>
     <a class="fa fa-edit" title="Править" ui-sref="{{makeEditSref(node)}}"></a>
     <a class="fa fa-trash" title="Удалить" ng-click="delete(node)"></a>
