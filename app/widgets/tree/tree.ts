@@ -125,6 +125,7 @@ class Node {
         this.leaf = model.leaf;
         this.mark = model.mark;
         this.tree = tree;
+        this.parent = parent;
         this.level = level;
         this.tree.scope.$watch(() => { return this.isActive() }, () => { if (this.isActive()) this.expandSubtree() });
     }
@@ -159,7 +160,7 @@ class Node {
     getChildren() {
         this.tree.http(
             { method: 'GET'
-            , url: '/coffee.api.model/' + this.tree.objModel + '/getChildrenOf/'
+            , url: '/coffee.api.model/' + this.tree.objModel + '/getChildrenOf'
             , params: {id: this.id}
             }
         ).success(data => {

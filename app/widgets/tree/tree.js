@@ -98,6 +98,7 @@ define(["require", "exports", 'angular'], function (require, exports, angular) {
             this.leaf = model.leaf;
             this.mark = model.mark;
             this.tree = tree;
+            this.parent = parent;
             this.level = level;
             this.tree.scope.$watch(function () {
                 return _this.isActive();
@@ -138,7 +139,7 @@ define(["require", "exports", 'angular'], function (require, exports, angular) {
         };
         Node.prototype.getChildren = function () {
             var _this = this;
-            this.tree.http({ method: 'GET', url: '/coffee.api.model/' + this.tree.objModel + '/getChildrenOf/', params: { id: this.id } }).success(function (data) {
+            this.tree.http({ method: 'GET', url: '/coffee.api.model/' + this.tree.objModel + '/getChildrenOf', params: { id: this.id } }).success(function (data) {
                 _this.childrenLoaded = true;
                 _this.children = data.model.map(function (el, index) { return new Node(el, _this.tree, index, _this, _this.level + 1); });
             });
