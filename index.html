@@ -32,9 +32,11 @@
 					</div>
 					<div nologin id="auth-form" ng-controller="AuthCtrl">
 						<div>Требуется авторизация</div>
+						<form>
 						<span><input ng-model="login" placeholder="логин" type="text" name="login"/></span>
 						<span><input ng-model="password" placeholder="пароль" type="password" name="password"/></span>
 						<span><input ng-click="doLogin()" type="submit" value="Войти"/></span>
+						</form>
 					</div>
 					<div restricted class="uk-width-medium-4-10 uk-width-small-10-10 icons">
 <!--						<a href="#" data-uk-tooltip="{pos:'bottom'}" title="Карта сайта">
