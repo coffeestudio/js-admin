@@ -20,7 +20,13 @@ class CoffeeRestService {
     constructor($resource, $http, $q) {
         this.$http = $http;
         this.$q = $q;
-        this.config = $resource('/coffee.api.config/:section/:subsection/:param');
+        this.config = $resource('/coffee.api.config/:section/:subsection/:param', {}, {
+            getValue: {
+                transformResponse: (data, hGetter) => {
+                    return {value: angular.fromJson(data)};
+                }
+            }
+        });
         this.lang = $resource('/coffee.api.lang/:section/:subsection/:param', {}, {
             getValue: {
                 transformResponse: (data, hGetter) => {

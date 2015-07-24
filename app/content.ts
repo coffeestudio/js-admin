@@ -130,6 +130,9 @@ class Content {
             $coffee.checkFeature($scope.name, 'IWithAttachments').then((answer) => {
                 $scope.withAttachments = answer;
             });
+            $coffee.checkFeature($scope.name, 'IWithSpecAttachments').then((answer) => {
+                $scope.withSpecAttachments = answer;
+            });
             $coffee.lang.getValue({section: 'models', subsection: $scope.name}, (data) => {
                 $scope.modelTitle = data.value;
             });

@@ -7,7 +7,7 @@
     <coffee-input name="{{k}}" value="object[k]" type="{{types[k]}}"/>
   </div>
   <div ng-if="withAttachments" class="ng-cloak">
-    <coffee-widget name="attachments" obj-model="{{name}}" obj-id="{{id}}" token=""></coffee-widget>
+    <coffee-widget name="attachments" obj-model="{{name}}" obj-id="{{id}}" has-spec="{{withSpecAttachments?'yes':'no'}}" token=""></coffee-widget>
   </div>
   <div class="submit"><input ng-click="save(object)" type="submit" value="Сохранить"/></div>
 </form>

@@ -8,6 +8,7 @@ class AttachmentPanel implements IWidget {
     objId: number = 0;
     token: string;
     maxsort: number = 0;
+    hasSpecFlag: boolean = false;
     attachments: Array<Attachment> = [];
     mainAtt: Attachment = null;
     state: State;
@@ -33,6 +34,7 @@ class AttachmentPanel implements IWidget {
         this.objId = isNaN($attrs.objId) ? 0 : $attrs.objId;
         this.token = $attrs.token;
         this.state = new State;
+        this.hasSpecFlag = $attrs.hasSpec == 'true' || $attrs.hasSpec == 'yes';
         this.fm = new FileManager;
     }
 
@@ -79,6 +81,8 @@ class State {
     comment0: string = '';
     isMain: boolean = false;
     isMain0: boolean = false;
+    isSpec: boolean = false;
+    isSpec0: boolean = false;
 
     setState(item: Attachment, $event) {
         $event.stopPropagation();
@@ -90,9 +94,11 @@ class State {
         this.comment0 = item.comment;
         this.isMain = item.isMain;
         this.isMain0 = item.isMain;
+        this.isSpec = item.isSpec;
+        this.isSpec0 = item.isSpec;
     }
     edited() {
-        return this.title != this.title0 || this.comment != this.comment0 || this.isMain != this.isMain0;
+        return this.title != this.title0 || this.comment != this.comment0 || this.isMain != this.isMain0 || this.isSpec != this.isSpec0;
     }
     reset() {
         this.activeItem = null;
@@ -103,6 +109,8 @@ class State {
         this.comment0 = '';
         this.isMain = false;
         this.isMain0 = false;
+        this.isSpec = false;
+        this.isSpec0 = false;
     }
     save() {
         this.activeItem.title = this.title;
@@ -111,9 +119,11 @@ class State {
         if (this.isMain0 != this.isMain) {
             this.activeItem.updateMain();
         }
+        this.activeItem.isSpec = this.isSpec;
         this.title0 = this.title;
         this.comment0 = this.comment;
         this.isMain0 = this.isMain;
+        this.isSpec0 = this.isSpec;
         this.activeItem.commit();
     }
 }
@@ -126,6 +136,7 @@ class Attachment {
     path: string = '';
     sort: number = 0;
     isMain: boolean = false;
+    isSpec: boolean = false;
     panel: AttachmentPanel;
     thumb: string = '';
     constructor(model: Object, panel = null) {
@@ -140,7 +151,7 @@ class Attachment {
     }
     commit() {
         this.panel.http.post('/coffee.api.model/'+this.panel.objModel+'/editAttachment?entityId='+this.panel.objId+'&attId='+this.id
-            , {title: this.title, comment: this.comment, isMain: this.isMain}
+            , {title: this.title, comment: this.comment, isMain: this.isMain, isSpec: this.isSpec}
         );
     }
     commitOrder() {

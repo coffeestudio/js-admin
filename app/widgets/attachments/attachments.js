@@ -6,6 +6,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             var _this = this;
             this.objId = 0;
             this.maxsort = 0;
+            this.hasSpecFlag = false;
             this.attachments = [];
             this.mainAtt = null;
             this.$inject = ['$scope', '$attrs', '$http'];
@@ -25,6 +26,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.objId = isNaN($attrs.objId) ? 0 : $attrs.objId;
             this.token = $attrs.token;
             this.state = new State;
+            this.hasSpecFlag = $attrs.hasSpec == 'true' || $attrs.hasSpec == 'yes';
             this.fm = new FileManager;
         }
         AttachmentPanel.prototype.init = function (data) {
@@ -64,6 +66,8 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.comment0 = '';
             this.isMain = false;
             this.isMain0 = false;
+            this.isSpec = false;
+            this.isSpec0 = false;
         }
         State.prototype.setState = function (item, $event) {
             $event.stopPropagation();
@@ -75,9 +79,11 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.comment0 = item.comment;
             this.isMain = item.isMain;
             this.isMain0 = item.isMain;
+            this.isSpec = item.isSpec;
+            this.isSpec0 = item.isSpec;
         };
         State.prototype.edited = function () {
-            return this.title != this.title0 || this.comment != this.comment0 || this.isMain != this.isMain0;
+            return this.title != this.title0 || this.comment != this.comment0 || this.isMain != this.isMain0 || this.isSpec != this.isSpec0;
         };
         State.prototype.reset = function () {
             this.activeItem = null;
@@ -88,6 +94,8 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.comment0 = '';
             this.isMain = false;
             this.isMain0 = false;
+            this.isSpec = false;
+            this.isSpec0 = false;
         };
         State.prototype.save = function () {
             this.activeItem.title = this.title;
@@ -96,9 +104,11 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             if (this.isMain0 != this.isMain) {
                 this.activeItem.updateMain();
             }
+            this.activeItem.isSpec = this.isSpec;
             this.title0 = this.title;
             this.comment0 = this.comment;
             this.isMain0 = this.isMain;
+            this.isSpec0 = this.isSpec;
             this.activeItem.commit();
         };
         return State;
@@ -112,6 +122,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.path = '';
             this.sort = 0;
             this.isMain = false;
+            this.isSpec = false;
             this.thumb = '';
             for (var k in model) {
                 if (k == 'path')
@@ -127,7 +138,7 @@ define(["require", "exports", 'widgets/filemanager/filemanager'], function (requ
             this.loadThumb();
         }
         Attachment.prototype.commit = function () {
-            this.panel.http.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { title: this.title, comment: this.comment, isMain: this.isMain });
+            this.panel.http.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { title: this.title, comment: this.comment, isMain: this.isMain, isSpec: this.isSpec });
         };
         Attachment.prototype.commitOrder = function () {
             this.panel.http.post('/coffee.api.model/' + this.panel.objModel + '/editAttachment?entityId=' + this.panel.objId + '&attId=' + this.id, { sort: this.sort });

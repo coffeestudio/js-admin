@@ -10,7 +10,8 @@ import layout = require('layout');
 import elements = require('elements');
 import rest = require('coffee-rest');
 import content = require('content');
+import settings = require('settings');
 
-angular.bootstrap($('body'), [layout.name, elements.name, widgets.name, rest.name, content.name, 'ngAnimate']);
+angular.bootstrap($('body'), [layout.name, elements.name, widgets.name, rest.name, content.name, settings.name, 'ngAnimate']);
 
 console.log('Welcome to the CoffeeStudio admin system!');

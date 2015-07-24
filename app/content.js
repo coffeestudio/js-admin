@@ -120,6 +120,9 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                 $coffee.checkFeature($scope.name, 'IWithAttachments').then(function (answer) {
                     $scope.withAttachments = answer;
                 });
+                $coffee.checkFeature($scope.name, 'IWithSpecAttachments').then(function (answer) {
+                    $scope.withSpecAttachments = answer;
+                });
                 $coffee.lang.getValue({ section: 'models', subsection: $scope.name }, function (data) {
                     $scope.modelTitle = data.value;
                 });

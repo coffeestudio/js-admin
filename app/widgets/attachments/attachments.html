@@ -4,6 +4,7 @@
     <input placeholder="название" ng-model="w.state.title"/>
     <input placeholder="комментарий" ng-model="w.state.comment"/>
     <label><input type="checkbox" ng-model="w.state.isMain"/>&nbsp;главное</label>
+    <label ng-if="w.hasSpecFlag"><input type="checkbox" ng-model="w.state.isSpec"/>&nbsp;специальное</label>
     <input type="button" ng-click="w.state.save()" ng-disabled="! w.state.edited()" value="Сохранить"/>
   </span>
   <ul ui-sortable="w.sortable" ng-model="w.attachments">

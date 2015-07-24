@@ -1,0 +1,14 @@
+<h2>Настройки сайта</h2>
+<form>
+    <table class="settings">
+        <thead><th>Опция</th><th>Значение</th></thead>
+        <!--, 'title' => G::S('getTitle')->t('string')-->
+        <!--, 'name' => G::S('getName')->t('string')-->
+        <!--, 'type' => G::S('getType')->t('string')-->
+        <!--, 'value' => G::S('getValue', 'setValue')-->
+        <tbody>
+            <tr ng-repeat="r in rows"><td ng-bind="r.title"></td><td><textarea ng-model="r.value"></textarea></td></tr>
+        </tbody>
+    </table>
+    <input type="submit" value="Сохранить"/>
+</form>

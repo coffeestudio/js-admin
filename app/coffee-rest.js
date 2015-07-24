@@ -19,7 +19,13 @@ define(["require", "exports", 'angular', 'jquery', "angular-resource"], function
             this.features_cache = {};
             this.$http = $http;
             this.$q = $q;
-            this.config = $resource('/coffee.api.config/:section/:subsection/:param');
+            this.config = $resource('/coffee.api.config/:section/:subsection/:param', {}, {
+                getValue: {
+                    transformResponse: function (data, hGetter) {
+                        return { value: angular.fromJson(data) };
+                    }
+                }
+            });
             this.lang = $resource('/coffee.api.lang/:section/:subsection/:param', {}, {
                 getValue: {
                     transformResponse: function (data, hGetter) {
