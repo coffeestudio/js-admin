@@ -25,12 +25,25 @@ class Settings {
 
           $locationProvider.html5Mode(true);
         }])
-        .controller('CoffeeSettingsCtrl', ['$scope', '$coffee', ($scope, $coffee) => {
+        .controller('CoffeeSettingsCtrl', ['$scope', '$coffee', '$notify', ($scope, $coffee, $notify) => {
             $coffee.config.getValue({section: 'admin', subsection: 'settingsModel'}, (data) => {
                 var sModel = data.value;
                 $coffee.model.get({name: sModel, method: 'getList'}, (data) => {
                     $scope.rows = data.model;
                 });
+                $scope.save = (settings: Array<any>) => {
+                    var data = {};
+                    for (var i in settings) {
+                        data[settings[i].id] = settings[i].value;
+                    }
+                    $coffee.model.save({name: sModel, method: 'updateStorage'}, data, (data) => {
+                        if (data.type == 'value' && data.value == true) {
+                            $notify.push('Сохранено', true);
+                        } else {
+                            $notify.push('Ошибка', false);
+                        }
+                    });
+                };
             });
         }])
         ;

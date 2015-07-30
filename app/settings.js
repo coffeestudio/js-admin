@@ -21,12 +21,26 @@ define(["require", "exports", 'angular', "angular-ui-router", "angular-ui-sortab
                     }
                 });
                 $locationProvider.html5Mode(true);
-            }]).controller('CoffeeSettingsCtrl', ['$scope', '$coffee', function ($scope, $coffee) {
+            }]).controller('CoffeeSettingsCtrl', ['$scope', '$coffee', '$notify', function ($scope, $coffee, $notify) {
                 $coffee.config.getValue({ section: 'admin', subsection: 'settingsModel' }, function (data) {
                     var sModel = data.value;
                     $coffee.model.get({ name: sModel, method: 'getList' }, function (data) {
                         $scope.rows = data.model;
                     });
+                    $scope.save = function (settings) {
+                        var data = {};
+                        for (var i in settings) {
+                            data[settings[i].id] = settings[i].value;
+                        }
+                        $coffee.model.save({ name: sModel, method: 'updateStorage' }, data, function (data) {
+                            if (data.type == 'value' && data.value == true) {
+                                $notify.push('Сохранено', true);
+                            }
+                            else {
+                                $notify.push('Ошибка', false);
+                            }
+                        });
+                    };
                 });
             }]);
             return this.ngModule;

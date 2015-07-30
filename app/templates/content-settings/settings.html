@@ -7,8 +7,8 @@
         <!--, 'type' => G::S('getType')->t('string')-->
         <!--, 'value' => G::S('getValue', 'setValue')-->
         <tbody>
-            <tr ng-repeat="r in rows"><td ng-bind="r.title"></td><td><textarea ng-model="r.value"></textarea></td></tr>
+            <tr ng-repeat="r in rows"><td class="name" ng-bind="r.title"></td><td class="value"><textarea ng-model="r.value"></textarea></td></tr>
         </tbody>
     </table>
-    <input type="submit" value="Сохранить"/>
+    <input ng-click="save(rows)" type="submit" value="Сохранить"/>
 </form>
